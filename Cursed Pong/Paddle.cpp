@@ -7,16 +7,16 @@ using std::string;
 using std::cout;
 using std::endl;
 
-const int SCREEN_WIDTH = 600;
-const int SCREEN_HEIGHT = 700;
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 600;
 
 class Paddle {
     public:
     static const int PWIDTH = 20;
     static const int PHEIGHT = 100;
-    static const int PADDLE_VEL = 1;
+    const double PADDLE_VEL = 0.4;
 
-    Paddle (int pX) {
+    Paddle (double pX) {
         this -> pX = pX;
         pY = 0;
         pVelY = 0;
@@ -68,10 +68,10 @@ class Paddle {
     }
 
     private: 
-    int pX;
-    int pY;
+    double pX;
+    double pY;
 
-    int pVelY;
+    double pVelY;
 
     SDL_Rect pCollider;
 };

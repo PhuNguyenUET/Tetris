@@ -9,9 +9,6 @@ using std::string;
 using std::cout;
 using std::endl;
 
-const int SCREEN_WIDTH = 600;
-const int SCREEN_HEIGHT = 700;
-
 class Window {
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -56,6 +53,8 @@ class Window {
             while (SDL_PollEvent(&e) != 0) {
                 if (e.type == SDL_QUIT) {
                     quit = true;
+                } else {
+                    player1->handleEvent(e);
                 }
             }
 
@@ -68,7 +67,7 @@ class Window {
             player1->render(renderer);
             player2->render(renderer);
 
-            SDL_RenderPresent;
+            SDL_RenderPresent(renderer);
         }
     }
 
