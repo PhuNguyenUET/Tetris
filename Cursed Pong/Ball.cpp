@@ -54,7 +54,7 @@ class Ball {
         }
 
 
-        void move (SDL_Rect const &pad1, SDL_Rect const &pad2) {
+        void move (SDL_Rect const &pad1, SDL_Rect const &pad2, int& score1, int& score2) {
             bX += bVelX;
             bCollider.x = bX;
 
@@ -64,8 +64,10 @@ class Ball {
                 bool p2 = checkCollision(bCollider, pad2);
                 int state;
                 if (p1) {
+                    score1 ++;
                     state = collisionPos(bCollider, pad1);
                 } else if (p2) {
+                    score2 ++;
                     state = collisionPos(bCollider, pad2);
                 }
                 bX -= bVelX;
@@ -157,7 +159,7 @@ class Ball {
 
 
         bool isBallInGame () {
-            if (bX < 0 || (bX + BALL_WIDTH > SCREEN_WIDTH)) {
+            if (bX + BALL_WIDTH < 0 || (bX > SCREEN_WIDTH)) {
                 return false;
             } else {
                 return true;
@@ -202,6 +204,9 @@ class Ball {
             Mix_Quit();
         }
 
+        ~Ball () {
+            close();
+        }
     private:
         Mix_Chunk* ballHit = NULL;
         Mix_Chunk* ballInit = NULL;

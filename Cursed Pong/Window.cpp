@@ -2,13 +2,18 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 #include <chrono>
+#include <string>
+#include <bitset>
 
 #include "Paddle.cpp"
+#include "ScoreBoard.cpp"
 
 using std::string;
 using std::cout;
 using std::endl;
+using std::to_string;
 
 class Window {
     Mix_Music *music = NULL;
@@ -17,6 +22,13 @@ class Window {
     Paddle* player1;
     Paddle* player2;
     Ball* ball; 
+    ScoreBoard* scorePlayer1;
+    ScoreBoard* scorePlayer2; 
+
+    int score1 = 0;
+    int score2 = 0;
+    string score1s;
+    string score2s;
 
     void init () {
         SDL_Init(SDL_INIT_EVERYTHING);
@@ -32,8 +44,10 @@ class Window {
 
         Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
 
-        music = Mix_LoadMUS("Audio/Harry.wav");
+        music = Mix_LoadMUS("Audio/Mario.wav");
         Mix_PlayMusic(music, -1);
+
+        TTF_Init();
     }   
 
     void close () {
@@ -49,6 +63,7 @@ class Window {
         IMG_Quit();
         SDL_Quit();
         Mix_Quit();
+        TTF_Quit();
     }
 
     public: 
@@ -58,6 +73,8 @@ class Window {
         player1 = new Paddle(0);
         player2 = new Paddle(SCREEN_WIDTH - (*player2).PWIDTH);
         ball = new Ball();
+        scorePlayer1 = new ScoreBoard();
+        scorePlayer2 = new ScoreBoard();
         bool quit = false;
         bool inGame = true;
         int timeMark = 0;
@@ -73,7 +90,7 @@ class Window {
             }
 
             player1->move();
-            ball->move(player1 -> getCollider(), player2 -> getCollider());
+            ball->move(player1 -> getCollider(), player2 -> getCollider(), score1, score2);
             if (inGame == true) {
                 player2->selfMove(player2->getCollider(), ball);
             }
@@ -87,6 +104,12 @@ class Window {
             }
             SDL_SetRenderDrawColor (renderer, 0, 0, 0, 255);
 
+            score1s = to_string(score1);
+            score2s = to_string(score2);
+            //scorePlayer1->loadFromRenderedText("0", renderer);
+            //scorePlayer2->loadFromRenderedText("0", renderer);
+            //scorePlayer1->render(300, 30, renderer);
+            //scorePlayer2->render(600, 30, renderer);
             player1->render(renderer);
             player2->render(renderer);
             ball->render(renderer);
@@ -107,6 +130,8 @@ class Window {
 
             if (quit) {
                 ball->close();
+                scorePlayer1->close();
+                scorePlayer2->close();
             }
         }
     }
