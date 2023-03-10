@@ -2,18 +2,17 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
+#include "Ball.cpp"
 
 using std::string;
 using std::cout;
 using std::endl;
 
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
 
 class Paddle {
     public:
-    static const int PWIDTH = 20;
-    static const int PHEIGHT = 100;
+    static const int PWIDTH = 12;
+    static const int PHEIGHT = 60;
     const double PADDLE_VEL = 0.3 ;
 
     Paddle (double pX) {
@@ -44,8 +43,8 @@ class Paddle {
         }
     }
 
-    // Currently will go haywire if the ball go out of the screen
-    void selfMove (SDL_Rect pad, SDL_Rect ball) {
+    void selfMove (SDL_Rect pad, Ball* b) {
+        SDL_Rect ball = b->getCollider();
         int bTop = ball.y;
         int bBot = ball.y + ball.h;
 
@@ -60,7 +59,24 @@ class Paddle {
             pVelY = 0;
         }
 
-        pY += pVelY;
+        // If the ball is moving in a straight line
+        // And the AI is not moving
+        if ((*b).getVelY() == 0 && pVelY == 0) {
+            int status = (*b).collisionPos(ball, pad);
+            // Prevent the AI to hit in a straight line again
+            // By checking if it does then change the velocity
+            // If the upper-half, then move down
+            // If the lower-half, then move up
+            if (status == 2) {
+                if (pad.y < SCREEN_HEIGHT/2) {
+                    pVelY = PADDLE_VEL;
+                } else {
+                    pVelY = - PADDLE_VEL;
+                }
+            }
+        }
+
+        pY = pY + pVelY;
         pCollider.y = pY;
         if ((pY < 0) || (pY + PHEIGHT > SCREEN_HEIGHT)) {
             pY -= pVelY;

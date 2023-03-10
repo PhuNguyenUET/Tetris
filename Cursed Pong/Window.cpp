@@ -5,13 +5,11 @@
 #include <chrono>
 
 #include "Paddle.cpp"
-#include "Ball.cpp"
 
 using std::string;
 using std::cout;
 using std::endl;
 
-// Currently have bug when ball collide with the second pad
 class Window {
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -68,11 +66,17 @@ class Window {
             player1->move();
             ball->move(player1 -> getCollider(), player2 -> getCollider());
             if (inGame == true) {
-                player2->selfMove(player2->getCollider(), ball -> getCollider());
+                player2->selfMove(player2->getCollider(), ball);
             }
 
             SDL_SetRenderDrawColor (renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
+
+            SDL_SetRenderDrawColor (renderer, 255, 255, 255, 255);
+            for (int i = 0; i <= SCREEN_HEIGHT; i+= 30) {
+                SDL_RenderDrawLine(renderer, SCREEN_WIDTH/2, i, SCREEN_WIDTH/2, i + 15);
+            }
+            SDL_SetRenderDrawColor (renderer, 0, 0, 0, 255);
 
             player1->render(renderer);
             player2->render(renderer);
