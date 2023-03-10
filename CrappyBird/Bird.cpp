@@ -27,8 +27,8 @@ class Bird {
 
     public:
     void loadMedia (SDL_Renderer* &renderer) {
-        bird = new LTexture();
-        (bird)->loadFromFile("Graphics/Bird.png", renderer);        
+        bird = new LTexture(50, 40);
+        (bird)->loadFromFile("Graphics/CrappyBird.png", renderer);        
     }
 
     void render (SDL_Renderer* &renderer) {
@@ -60,17 +60,24 @@ class Bird {
     void handleEvent (SDL_Event& e) {
         if (e.type == SDL_KEYDOWN && e.key.repeat == 0) {
             if (e.key.keysym.sym == SDLK_SPACE || e.key.keysym.sym == SDLK_UP) {
-                vel += VERTI_VELOCITY;
+                vel = - VERTI_VELOCITY;
             } 
         } else if (e.type == SDL_MOUSEBUTTONDOWN) {
-            vel += VERTI_VELOCITY;
+            vel = - VERTI_VELOCITY;
+        }
+        if (e.type == SDL_KEYUP && e.key.repeat == 0) {
+            if (e.key.keysym.sym == SDLK_SPACE || e.key.keysym.sym == SDLK_UP) {
+                vel = VERTI_VELOCITY;
+            } 
+        } else if (e.type == SDL_MOUSEBUTTONUP) {
+            vel = VERTI_VELOCITY;
         }
     }
 
     void move () {
         posY += vel;
         bCollider.y = posY;
-        if ((posY < GROUND) || (posY + bird->getHeight() > SCREEN_HEIGHT)) {
+        if ((posY < 0) || (posY + bird->getHeight() > SCREEN_HEIGHT - GROUND)) {
             posY -= vel;
             bCollider.y = posY;
         }

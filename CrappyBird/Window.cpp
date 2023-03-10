@@ -60,7 +60,7 @@ class Window {
 
         bird = new Bird(renderer);
         bird->setX(20);
-        bird->setY((SCREEN_HEIGHT - bird->getHeight()) / 2);
+        bird->setY((SCREEN_HEIGHT - GROUND - bird->getHeight()) / 2);
 
         bool quit = false;
         SDL_Event e;
