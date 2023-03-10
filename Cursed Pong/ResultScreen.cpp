@@ -45,10 +45,12 @@ class ResultScreen {
             Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
 
             if (win) {
-                music = Mix_LoadMUS("Audio/Harry.wav");
+                music = Mix_LoadMUS("Audio/Clapping.wav");
                 Mix_PlayMusic(music, 0);
                 result = "You Win";
             } else {
+                music = Mix_LoadMUS("Audio/Harry.wav");
+                Mix_PlayMusic(music, 0);
                 result = "You Lost";
             }
 
