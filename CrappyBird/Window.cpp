@@ -71,6 +71,7 @@ class Window {
 
         bool quit = false;
         bool gameEnd = false;
+        bool hitGround = false;
         SDL_Event e;
 
         while (!quit) {
@@ -83,7 +84,7 @@ class Window {
                     }
                 }
             }
-            bird->move();
+            bird->move(gameEnd, hitGround);
 
             Pillar* prev = pillars.back();
             if (prev -> getPosX() <= SCREEN_WIDTH - 220) {

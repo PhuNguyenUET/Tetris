@@ -14,17 +14,20 @@ using std::to_string;
 
 class Bird {
     private:
-    const double VERTI_VELOCITY = 0.1;
+    const double VERTI_VELOCITY = 0.11;
     const double HORI_VELOCITY = 0.2; 
     const double VERTI_RISE = 40;
+    const double ANGLE_CHANGE = 0.05;
 
     LTexture* bird = NULL;
 
     public:
-    const double GRAVITY = 0.00009;
+    const double GRAVITY = 0.00008;
     double posX;
     double posY;
     double vel;
+    double angle = 0;
+    bool hasEvent = false;
 
     SDL_Rect bCollider;
 
@@ -34,7 +37,7 @@ class Bird {
     }
 
     void render (SDL_Renderer* &renderer) {
-        bird->render(posX, posY, renderer);   
+        bird->render(posX, posY, renderer, NULL, angle, NULL);   
     }
 
     void setX (int x) {
@@ -67,20 +70,40 @@ class Bird {
         if (e.type == SDL_KEYDOWN) {
             if (e.key.keysym.sym == SDLK_SPACE || e.key.keysym.sym == SDLK_UP) {
                 vel = -VERTI_VELOCITY;
+                hasEvent = true;
             } 
         } else if (e.type == SDL_MOUSEBUTTONDOWN) {
             vel = -VERTI_VELOCITY;
+            hasEvent = true;
         }
     }
 
-    void move () {
+    void move (bool& gameEnd, bool& hitGround) {
         posY += vel;
         bCollider.y = posY;
         if ((posY + bird->getHeight() > SCREEN_HEIGHT - GROUND)) {
             posY -= vel;
             bCollider.y = posY;
+            hitGround = true;
+            gameEnd = true;
         }
         vel += GRAVITY;
+        if (!hasEvent) {
+            if (!hitGround && vel > 0) {
+                if (angle < 90) {
+                    angle += ANGLE_CHANGE;
+                } else {
+                    angle = 90;
+                }
+            }
+        }
+        if (hasEvent) {
+            if (angle > -30) {
+                angle -= 0.3;
+            } else {
+                hasEvent = false;
+            }
+        }
     } 
 
     SDL_Rect getCollider () {
@@ -92,5 +115,5 @@ class Bird {
         loadMedia(renderer);
         bCollider.w = bird->getWidth();
         bCollider.h = bird->getHeight();
-        }
+    }
 }; 

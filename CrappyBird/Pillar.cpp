@@ -63,8 +63,8 @@ class Pillar {
         if (checkCollision(bird->getCollider(), upCollider) || checkCollision(bird->getCollider(), downCollider)) {
             gameEnd = true;
         }
-        /*if (bird -> posY <= upCollider.y + upCollider.h && (bird -> posX + bird->getWidth()>= upCollider.x)) {
-            vel -= bird -> GRAVITY;
+        /* if (bird -> posY <= upCollider.y + upCollider.h && (bird -> posX + bird->getWidth()>= upCollider.x)) {
+            bird -> vel -= bird -> GRAVITY;
             bird -> posY -= vel;
             bird -> bCollider.y = bird -> posY;
             gameEnd = true;
