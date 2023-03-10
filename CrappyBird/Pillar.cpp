@@ -16,13 +16,13 @@ class Pillar {
     private:
     const int OPEN_WIDTH = 30;
     const int PLAYSPACE = SCREEN_HEIGHT - GROUND;
-    //const int OPEN_HEIGHT = 120;
-    const int OPEN_HEIGHT = 150;
+    const int OPEN_HEIGHT = 140;
     const double HORI_VEL = 0.035;
 
     int openY;
     double vel;
     double posX;
+    bool avail = true;
 
     SDL_Rect upCollider;
     SDL_Rect downCollider;
@@ -59,17 +59,20 @@ class Pillar {
         }
     }
 
-    void handleCollision (bool& gameEnd, Bird* &bird) {
+    void handleCollision (bool& gameEnd, Bird* &bird, bool& hitPipe) {
         if (checkCollision(bird->getCollider(), upCollider) || checkCollision(bird->getCollider(), downCollider)) {
+            if (!gameEnd) {
+                hitPipe = true;
+            }
             gameEnd = true;
         }
-        /* if (bird -> posY <= upCollider.y + upCollider.h && (bird -> posX + bird->getWidth()>= upCollider.x)) {
-            bird -> vel -= bird -> GRAVITY;
-            bird -> posY -= vel;
-            bird -> bCollider.y = bird -> posY;
-            gameEnd = true;
-            bird -> vel = 0;
-        } */
+    }
+
+    void updateScore (Bird* &bird, int& score) {
+        if (bird -> posX + bird -> getWidth() >= posX && avail) {
+            score ++;
+            avail = false;
+        }
     }
 
     bool checkCollision (SDL_Rect bird, SDL_Rect pillar) {

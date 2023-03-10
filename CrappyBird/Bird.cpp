@@ -17,7 +17,7 @@ class Bird {
     const double VERTI_VELOCITY = 0.11;
     const double HORI_VELOCITY = 0.2; 
     const double VERTI_RISE = 40;
-    const double ANGLE_CHANGE = 0.05;
+    const double ANGLE_CHANGE = 0.08;
 
     LTexture* bird = NULL;
 
@@ -78,7 +78,11 @@ class Bird {
         }
     }
 
-    void move (bool& gameEnd, bool& hitGround) {
+    void move (bool& gameEnd, bool& hitGround, bool& hitPipe) {
+        if (hitPipe) {
+            vel = 0.11;
+            hitPipe = false;
+        }
         posY += vel;
         bCollider.y = posY;
         if ((posY + bird->getHeight() > SCREEN_HEIGHT - GROUND)) {
@@ -89,7 +93,7 @@ class Bird {
         }
         vel += GRAVITY;
         if (!hasEvent) {
-            if (!hitGround && vel > 0) {
+            if (!hitGround && vel > 0.08) {
                 if (angle < 90) {
                     angle += ANGLE_CHANGE;
                 } else {
@@ -99,7 +103,7 @@ class Bird {
         }
         if (hasEvent) {
             if (angle > -30) {
-                angle -= 0.3;
+                angle -= 0.45;
             } else {
                 hasEvent = false;
             }

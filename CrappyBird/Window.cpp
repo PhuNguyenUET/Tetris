@@ -72,6 +72,8 @@ class Window {
         bool quit = false;
         bool gameEnd = false;
         bool hitGround = false;
+        bool hitPipe = false;
+        int score = 0;
         SDL_Event e;
 
         while (!quit) {
@@ -84,7 +86,7 @@ class Window {
                     }
                 }
             }
-            bird->move(gameEnd, hitGround);
+            bird->move(gameEnd, hitGround, hitPipe);
 
             Pillar* prev = pillars.back();
             if (prev -> getPosX() <= SCREEN_WIDTH - 220) {
@@ -105,7 +107,8 @@ class Window {
             for (int i = 0; i < n; i++) {
                 Pillar* pillar = pillars.front();
 
-                pillar->handleCollision(gameEnd, bird);
+                pillar->handleCollision(gameEnd, bird, hitPipe);
+                pillar -> updateScore(bird, score);
                 pillar->move(gameEnd);
                 pillar->render(renderer);
 
@@ -114,7 +117,6 @@ class Window {
             }
 
             bird->render(renderer);
-
 
             SDL_RenderPresent(renderer);
         }
