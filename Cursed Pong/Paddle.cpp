@@ -14,10 +14,11 @@ class Paddle {
     public:
     static const int PWIDTH = 20;
     static const int PHEIGHT = 100;
-    const double PADDLE_VEL = 0.4;
+    const double PADDLE_VEL = 0.3 ;
 
     Paddle (double pX) {
         this -> pX = pX;
+        pCollider.x = pX;
         pY = 0;
         pVelY = 0;
         pCollider.w = PWIDTH;
@@ -43,6 +44,7 @@ class Paddle {
         }
     }
 
+    // Currently will go haywire if the ball go out of the screen
     void selfMove (SDL_Rect pad, SDL_Rect ball) {
         int bTop = ball.y;
         int bBot = ball.y + ball.h;
@@ -65,6 +67,10 @@ class Paddle {
             pCollider.y = pY;
             pVelY = 0;
         }
+    }
+
+    void forceStop () {
+        pVelY = 0;
     }
 
     void handleEvent (SDL_Event& e) {

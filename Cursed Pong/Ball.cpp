@@ -10,20 +10,45 @@ using std::endl;
 const int SCREEN_WIDTH_B = 800;
 const int SCREEN_HEIGHT_B = 600;
 
+// The ball now sometimes slippery af
 class Ball {
     public:
         static const int BALL_WIDTH = 15;
         static const int BALL_HEIGHT = 15;
+        const double bIniVel = 0.1;
         double bVelDif = 0.5;
+        int randDirection () {
+            return rand() % 4 + 1;
+        }
         Ball () {
             bX = (SCREEN_WIDTH_B - BALL_WIDTH) / 2;
             bY = (SCREEN_HEIGHT_B - BALL_HEIGHT) / 2;
 
-            bVelDif = 0.5;
+            bCollider.w = BALL_WIDTH;
+            bCollider.h = BALL_HEIGHT;
 
-            bVelX = -0.1;
-            bVelY = -0.1;
+            bVelDif = 0.5;
+            int dir = randDirection();
+            switch (dir) {
+                case 1:
+                    bVelX = -bIniVel;
+                    bVelY = -bIniVel;
+                    break;
+                case 2:
+                    bVelX = bIniVel;
+                    bVelY = -bIniVel;
+                    break;
+                case 3:
+                    bVelX = bIniVel;
+                    bVelY = bIniVel;
+                    break;
+                case 4:
+                    bVelX = -bIniVel;
+                    bVelY = bIniVel;
+                    break;
+            }
         }
+
 
         void move (SDL_Rect const &pad1, SDL_Rect const &pad2) {
             bX += bVelX;
@@ -31,9 +56,10 @@ class Ball {
 
             if (checkCollision(bCollider, pad1) || checkCollision(bCollider, pad2)) {
                 bX -= bVelX;
-                bCollider.x = bX;
 
                 bVelX = -bVelX;
+
+                bCollider.x = bX;
             }
 
             bY += bVelY;
@@ -84,6 +110,15 @@ class Ball {
 
         SDL_Rect getCollider () {
             return bCollider;
+        }
+
+
+        bool isBallInGame () {
+            if (bX < 0 || (bX + BALL_WIDTH > SCREEN_WIDTH_B)) {
+                return false;
+            } else {
+                return true;
+            }
         }
 
     private:

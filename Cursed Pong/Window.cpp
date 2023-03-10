@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
+#include <chrono>
 
 #include "Paddle.cpp"
 #include "Ball.cpp"
@@ -10,6 +11,7 @@ using std::string;
 using std::cout;
 using std::endl;
 
+// Currently have bug when ball collide with the second pad
 class Window {
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -49,6 +51,8 @@ class Window {
         player2 = new Paddle(SCREEN_WIDTH - (*player2).PWIDTH);
         ball = new Ball();
         bool quit = false;
+        bool inGame = true;
+        int timeMark = 0;
         SDL_Event e;
 
         while (!quit) {
@@ -57,12 +61,15 @@ class Window {
                     quit = true;
                 } else {
                     player1->handleEvent(e);
+                    player2->handleEvent(e);
                 }
             }
 
             player1->move();
             ball->move(player1 -> getCollider(), player2 -> getCollider());
-            player2->selfMove(player2->getCollider(), ball -> getCollider());
+            if (inGame == true) {
+                player2->selfMove(player2->getCollider(), ball -> getCollider());
+            }
 
             SDL_SetRenderDrawColor (renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
@@ -72,6 +79,17 @@ class Window {
             ball->render(renderer);
 
             SDL_RenderPresent(renderer);
+
+            if (inGame == true && !ball->isBallInGame()) {
+                timeMark = SDL_GetTicks();
+                inGame = false;
+                player2 -> forceStop();
+            }
+
+            if ((inGame == false) && (SDL_GetTicks() - timeMark > 1000)) {
+                ball = new Ball();
+                inGame = true;
+            }
         }
     }
 

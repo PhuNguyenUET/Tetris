@@ -10,5 +10,6 @@ using std::cout;
 using std::endl;
 
 int main (int argc, char* args[]) {
+    srand(time(0));
     new Window();
 }
