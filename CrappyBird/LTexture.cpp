@@ -65,7 +65,7 @@ class LTexture {
             renderQuad.w = clip -> w;
             renderQuad.h = clip -> h;
         }
-        SDL_RenderCopy(renderer, mTexture, NULL, &renderQuad);
+        SDL_RenderCopy(renderer, mTexture, clip, &renderQuad);
     }
 
     int getWidth () {

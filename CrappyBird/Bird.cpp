@@ -5,7 +5,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <string>
 
-#include "LTexture.cpp"
+#include "Pillar.cpp"
 
 using std::string;
 using std::cout;
@@ -63,7 +63,7 @@ class Bird {
     }
 
     void handleEvent (SDL_Event& e) {
-        if (e.type == SDL_KEYDOWN && e.key.repeat == 0) {
+        if (e.type == SDL_KEYDOWN) {
             if (e.key.keysym.sym == SDLK_SPACE || e.key.keysym.sym == SDLK_UP) {
                 vel = -VERTI_VELOCITY;
             } 
@@ -72,15 +72,57 @@ class Bird {
         }
     }
 
-    void move () {
+    void move (Pillar* &pillar, bool& gameEnd) {
         posY += vel;
         bCollider.y = posY;
         if ((posY + bird->getHeight() > SCREEN_HEIGHT - GROUND)) {
             posY -= vel;
             bCollider.y = posY;
         }
+        SDL_Rect upCollider = pillar->getUpCollider();
+        if (posY <= upCollider.y + upCollider.h && (posX >= upCollider.x)) {
+            posY -= vel;
+            bCollider.y = posY;
+            gameEnd = true;
+            vel = 0;
+        }
         vel += GRAVITY;
     } 
+
+    void handleCollision (bool& gameEnd, Pillar* &pillar) {
+        if (checkCollision(bCollider, pillar -> getUpCollider()) || checkCollision(bCollider, pillar -> getDownCollider())) {
+            gameEnd = true;
+        }
+    }
+
+    bool checkCollision (SDL_Rect bird, SDL_Rect pillar) {
+        int bLeft, bRight;
+        int pLeft, pRight;
+        int bTop, bBot;
+        int pTop, pBot;
+
+        bLeft = bird.x;
+        bRight = bird.x + bird.w;
+        bTop = bird.y;
+        bBot = bird.y + bird.h;
+
+        pLeft = pillar.x;
+        pRight = pillar.x + pillar.w;
+        pTop = pillar.y;
+        pBot = pillar.y + pillar.h;
+
+        if (bBot < pTop) {
+            return false;
+        } else if (bTop > pBot) {
+            return false;
+        } else if (bRight < pLeft) {
+            return false;
+        } else if (bLeft > pRight) {
+            return false;
+        }
+
+        return true;
+    }
 
     Bird (SDL_Renderer* &renderer) {
         vel = 0;

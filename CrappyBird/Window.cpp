@@ -20,6 +20,7 @@ class Window {
     LTexture* background;
 
     Bird* bird = NULL;
+    Pillar* pillar = NULL;
 
     void init () {
         SDL_Init(SDL_INIT_EVERYTHING);
@@ -62,7 +63,10 @@ class Window {
         bird->setX(SCREEN_WIDTH/2 - bird->getWidth());
         bird->setY((SCREEN_HEIGHT - GROUND - bird->getHeight()) / 2);
 
+        pillar = new Pillar (renderer);
+
         bool quit = false;
+        bool gameEnd = false;
         SDL_Event e;
 
         while (!quit) {
@@ -70,17 +74,24 @@ class Window {
                 if (e.type == SDL_QUIT) {
                     quit = true;
                 } else {
-                    bird->handleEvent(e);
+                    if (!gameEnd) {
+                        bird->handleEvent(e);
+                    }
                 }
             }
-            bird->move();
+            bird->move(pillar, gameEnd);
 
             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
             SDL_RenderClear(renderer);
 
             background->render(0,0,renderer);
 
+            bird->handleCollision(gameEnd, pillar);
+            pillar->move(gameEnd);
+
+            pillar->render(renderer);
             bird->render(renderer);
+
 
             SDL_RenderPresent(renderer);
         }

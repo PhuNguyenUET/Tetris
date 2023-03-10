@@ -12,5 +12,6 @@ using std::endl;
 using std::to_string;
 
 int main (int argc, char* args[]) {
+    srand(time(0));
     new Window();
 }
