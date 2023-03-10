@@ -16,6 +16,9 @@ const int GROUND = 144;
 
 class LTexture {
     public:
+    int orgiWidth;
+    int orgiHeight;
+
     LTexture(int width, int height) {
         mTexture = NULL;
         mWidth = width;
@@ -40,6 +43,9 @@ class LTexture {
 
         newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
 
+        orgiHeight = loadedSurface->h;
+        orgiWidth = loadedSurface->w;
+
         if (mWidth == 0) {
             mWidth = loadedSurface -> w;
         }
@@ -63,8 +69,8 @@ class LTexture {
         SDL_Rect renderQuad = {x, y, mWidth, mHeight};
         SDL_RendererFlip flip = SDL_FLIP_NONE;
         if (clip != NULL) {
-            renderQuad.w = clip -> w;
-            renderQuad.h = clip -> h;
+            renderQuad.w = mWidth * (double)clip -> w / (double)orgiWidth;
+            renderQuad.h = mHeight * (double)clip -> h / (double)orgiHeight;
         }
         SDL_RenderCopyEx(renderer, mTexture, clip, &renderQuad, angle, center, flip);
     }

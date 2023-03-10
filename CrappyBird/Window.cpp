@@ -125,7 +125,7 @@ class Window {
                 }
             }
 
-            bird->render(renderer);
+            bird->playAnimation(renderer);
 
             if (score != prevScore) {
                 scb->loadFromRenderedText(to_string(score), renderer);
