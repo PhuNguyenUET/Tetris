@@ -13,11 +13,11 @@ using std::endl;
 using std::to_string;
 
 
-// Bug: Sometimes the shapes are not appearing :')
 class Window {
     private:
         SDL_Window* window;
         SDL_Renderer* renderer;
+        LTexture* bg = NULL;
 
         Shape* shape;
         Board* brd;
@@ -33,6 +33,11 @@ class Window {
 
             int imgFlag = IMG_INIT_PNG;
             IMG_Init(imgFlag);
+        }
+
+        void loadMedia () {
+            bg = new LTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
+            bg->loadFromFile("Graphics/background.png", renderer);
         }
 
         void close () {
@@ -60,31 +65,50 @@ class Window {
             }
 
             init ();
+            loadMedia();
 
             bool quit = false;
             SDL_Event e;
+            int prevTime = 0;
 
             shape = new Shape();
             brd = new Board(renderer);
 
             while (!quit) {
+                int time = SDL_GetTicks();
+                bool merge = false;
                 while (SDL_PollEvent(&e)) {
                     if (e.type == SDL_QUIT) {
                         quit = true;
                     } else {
-                        brd->handleEvent(e, shape);
+                        brd->handleEvent(e, shape, board, merge);
                     }
                 }
 
+                if (time - prevTime >= 700) {
+                    shape->fall();
+                    prevTime = time;
+                }
+
                 if (shape->checkMerge(board)) {
-                    //shape = new Shape();
+                    shape->updateBoard(board);
+                    shape->merge(board);
+                    shape = new Shape();
+                }
+
+                if (brd->isGameOver(board)) {
+                    quit = true;
                 }
 
                 SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
                 SDL_RenderClear(renderer);
 
+                bg->render(0, 0, renderer);
+
                 shape->updateBoard(board);
-                brd->render(board, renderer, shape -> getColorIdx());
+
+                brd->clearLines(board, rowState);
+                brd->render(board, renderer);
 
                 SDL_RenderPresent(renderer);
             }

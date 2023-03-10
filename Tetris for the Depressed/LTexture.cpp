@@ -10,14 +10,14 @@ using std::cout;
 using std::endl;
 using std::to_string;
 
-const int SCREEN_WIDTH = 500;
-const int SCREEN_HEIGHT = 700;
+const int SCREEN_WIDTH = 320;
+const int SCREEN_HEIGHT = 480;
 
 const int PLAY_COL = 10;
 const int PLAY_ROW = 20;
 
-const int PLAYSPACE_WIDTH = 320;
-const int PLAYSPACE_HEIGHT = 480;
+const int PLAYSPACE_WIDTH = 400;
+const int PLAYSPACE_HEIGHT = 500;
 
 class LTexture {
     public:

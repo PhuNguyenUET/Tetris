@@ -37,50 +37,46 @@ class Board {
             }
         }
 
-        void handleEvent (SDL_Event e, Shape* shape) {
+        void handleEvent (SDL_Event e, Shape* shape, vector <vector <int>>& board, bool& merge) {
             if (e.type == SDL_KEYDOWN) {
                 switch (e.key.keysym.sym) {
                     case SDLK_LEFT:
-                        shape -> moveLeft();
+                        shape -> moveLeft(board);
                         break;
                     case SDLK_RIGHT:
-                        shape -> moveRight();
+                        shape -> moveRight(board);
                         break;
                     case SDLK_UP:
-                        shape->rotateUp();
+                        shape->rotateUp(board);
                         break;
                     case SDLK_DOWN:
-                        shape -> rotateDown();for (int j = 0; j < PLAY_COL; j++) {
-                    
-                }
+                        shape -> rotateDown(board);
                         break;
                     case SDLK_SPACE:
-                        shape->fall();
+                        shape->hardDrop(board, merge);
                         break;
                 }
             }
         }
 
-        void checkValidMove() {
-            
-        }
-
-        void render (vector <vector <int>>& board, SDL_Renderer* renderer, int colorIdx) {
+        void render (vector <vector <int>>& board, SDL_Renderer* renderer) {
             for (int i = 0; i < PLAY_ROW; i++) {
                 for (int j = 0; j < PLAY_COL; j++) {
                     if (board[i][j] != 0) {
-                        tiles->render(j * 18, i * 18, renderer, &indTile[colorIdx]);
+                        if (board[i][j] < 10) {
+                            tiles->render(j * 18 + 28, i * 18 + 31, renderer, &indTile[board[i][j]]);
+                        } else {
+                            tiles->render(j * 18 + 28, i * 18 + 31, renderer, &indTile[board[i][j] - 10]);
+                        }
                     }
                 }
             }
         }
 
-        bool isGameOver (Shape shape, vector <vector <int>> & board) {
-            if (shape.checkMerge (board)) {
-                for (int i = 0; i < 4; i++) {
-                    if (shape.shapeArr[i].y <= 0) {
-                        return true;
-                    }
+        bool isGameOver (vector <vector <int>> & board) {
+            for (int i = 0; i < PLAY_COL; i++) {
+                if (board[0][i] >= 10) {
+                    return true;
                 }
             }
             return false;
@@ -91,7 +87,7 @@ class Board {
                 bool clear = true;
                 rowState[i] = true;
                 for (int j = 0; j < PLAY_COL; j++) {
-                    if (board[i][j] == 0) {
+                    if (board[i][j] < 10) {
                         clear = false;
                         rowState[i] = false;
 
@@ -104,18 +100,26 @@ class Board {
                 }
             }
             for (int i = PLAY_ROW - 2; i >= 0; i--) {
-                int idx = i;
-                int curRow = idx;
-                while (idx < PLAY_ROW && rowState[idx ++]) {
-                    // get to the lowest clear lines
-                }        
-                idx --;
-                board[idx] = board[curRow];
-                board[curRow] = vector <int> (PLAY_COL, 0); 
+                if (!rowState[i]) {
+                    int idx = i;
+                    int curRow = idx;
+                    while (idx < PLAY_ROW && rowState[++idx]) {
+                        // get to the lowest clear lines
+                    }        
+                    idx --;
+                    for (int j = 0; j < PLAY_COL; j++) {
+                        if (board[curRow][j] >= 10) {
+                            board[idx][j] = board[curRow][j];
+                        }
+                    }
+                    if (idx != curRow) {
+                        for (int j = 0; j < PLAY_COL; j++) {
+                            board[curRow][j] = 0;
+                        }
+                        rowState[curRow] = true;
+                        rowState[idx] = false;
+                    }
+                }
             }
-        }
-
-        void hardDrop () {
-
         }
 };
