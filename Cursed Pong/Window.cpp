@@ -11,6 +11,7 @@ using std::cout;
 using std::endl;
 
 class Window {
+    Mix_Music *music = NULL;
     SDL_Window* window;
     SDL_Renderer* renderer;
     Paddle* player1;
@@ -28,9 +29,17 @@ class Window {
 
         int imgFlag = IMG_INIT_PNG;
         IMG_Init(imgFlag); 
+
+        Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+
+        music = Mix_LoadMUS("Audio/Harry.wav");
+        Mix_PlayMusic(music, -1);
     }   
 
     void close () {
+        Mix_FreeMusic(music);
+        music = NULL;
+
         SDL_DestroyRenderer(renderer);
         renderer = NULL;
 
@@ -39,6 +48,7 @@ class Window {
 
         IMG_Quit();
         SDL_Quit();
+        Mix_Quit();
     }
 
     public: 
@@ -90,8 +100,13 @@ class Window {
             }
 
             if ((inGame == false) && (SDL_GetTicks() - timeMark > 1000)) {
+                ball->close();
                 ball = new Ball();
                 inGame = true;
+            }
+
+            if (quit) {
+                ball->close();
             }
         }
     }

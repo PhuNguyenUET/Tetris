@@ -46,6 +46,11 @@ class Ball {
                     bVelY = bIniVel;
                     break;
             }
+
+            ballHit = Mix_LoadWAV("Audio/BallHit.wav");
+            ballInit = Mix_LoadWAV("Audio/BallStart.wav");
+
+            Mix_PlayChannel(-1, ballInit, 0);
         }
 
 
@@ -54,6 +59,7 @@ class Ball {
             bCollider.x = bX;
 
             if (checkCollision(bCollider, pad1) || checkCollision(bCollider, pad2)) {
+                Mix_PlayChannel(-1, ballHit, 0);
                 bool p1 = checkCollision(bCollider, pad1);
                 bool p2 = checkCollision(bCollider, pad2);
                 int state;
@@ -188,7 +194,18 @@ class Ball {
             return bVelY;
         }
 
+        void close () {
+            Mix_FreeChunk(ballHit);
+            Mix_FreeChunk(ballInit);
+            ballHit = NULL;
+            ballInit = NULL;
+            Mix_Quit();
+        }
+
     private:
+        Mix_Chunk* ballHit = NULL;
+        Mix_Chunk* ballInit = NULL;
+
         double bX;
         double bY;
         double bVelX;
