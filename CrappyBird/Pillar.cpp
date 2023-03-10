@@ -5,7 +5,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <string>
 
-#include "LTexture.cpp";
+#include "Bird.cpp";
 
 using std::string;
 using std::cout;
@@ -16,7 +16,8 @@ class Pillar {
     private:
     const int OPEN_WIDTH = 30;
     const int PLAYSPACE = SCREEN_HEIGHT - GROUND;
-    const int OPEN_HEIGHT = 120;
+    //const int OPEN_HEIGHT = 120;
+    const int OPEN_HEIGHT = 150;
     const double HORI_VEL = 0.035;
 
     int openY;
@@ -58,17 +59,63 @@ class Pillar {
         }
     }
 
+    void handleCollision (bool& gameEnd, Bird* &bird) {
+        if (checkCollision(bird->getCollider(), upCollider) || checkCollision(bird->getCollider(), downCollider)) {
+            gameEnd = true;
+        }
+        /*if (bird -> posY <= upCollider.y + upCollider.h && (bird -> posX + bird->getWidth()>= upCollider.x)) {
+            vel -= bird -> GRAVITY;
+            bird -> posY -= vel;
+            bird -> bCollider.y = bird -> posY;
+            gameEnd = true;
+            bird -> vel = 0;
+        } */
+    }
+
+    bool checkCollision (SDL_Rect bird, SDL_Rect pillar) {
+        int bLeft, bRight;
+        int pLeft, pRight;
+        int bTop, bBot;
+        int pTop, pBot;
+
+        bLeft = bird.x;
+        bRight = bird.x + bird.w;
+        bTop = bird.y;
+        bBot = bird.y + bird.h;
+
+        pLeft = pillar.x;
+        pRight = pillar.x + pillar.w;
+        pTop = pillar.y;
+        pBot = pillar.y + pillar.h;
+
+        if (bBot < pTop) {
+            return false;
+        } else if (bTop > pBot) {
+            return false;
+        } else if (bRight < pLeft) {
+            return false;
+        } else if (bLeft > pRight) {
+            return false;
+        }
+
+        return true;
+    }
+
+    int getPosX () {
+        return posX;
+    }
+
     SDL_Rect getUpCollider () {
         return upCollider;
     }
 
-    SDL_Rect getDownCollider () {
-        return downCollider;
+    int getWidth () {
+        return upPillar -> getWidth();
     }
 
     Pillar (SDL_Renderer* &renderer) {
         posX = SCREEN_WIDTH;
-        openY = rand() % (PLAYSPACE - 250) + 100;
+        openY = rand() % (PLAYSPACE - 300) + 100;
         loadMedia(renderer);
         upCollider.w = upPillar -> getWidth();
         upCollider.h = openY;
