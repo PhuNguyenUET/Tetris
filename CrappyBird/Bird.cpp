@@ -5,7 +5,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <string>
 
-#include "LTexture.cpp"
+#include "ScoreNoti.cpp"
 
 using std::string;
 using std::cout;
@@ -18,16 +18,18 @@ class Bird {
     const double HORI_VELOCITY = 0.2; 
     const double VERTI_RISE = 40;
     const double ANGLE_CHANGE = 0.08;
+    const double HOVERING = 0.007;
 
     LTexture* bird = NULL;
 
     public:
-    const double GRAVITY = 0.00008;
+    const double GRAVITY = 0.00007;
     double posX;
     double posY;
     double vel;
     double angle = 0;
     bool hasEvent = false;
+    bool up = false;
 
     SDL_Rect bCollider;
 
@@ -66,19 +68,34 @@ class Bird {
         return bird -> getWidth();
     }
 
-    void handleEvent (SDL_Event& e) {
+    void handleEvent (SDL_Event& e, bool &gameStart) {
         if (e.type == SDL_KEYDOWN) {
             if (e.key.keysym.sym == SDLK_SPACE || e.key.keysym.sym == SDLK_UP) {
+                gameStart = true;
                 vel = -VERTI_VELOCITY;
                 hasEvent = true;
             } 
         } else if (e.type == SDL_MOUSEBUTTONDOWN) {
+            gameStart = true;
             vel = -VERTI_VELOCITY;
             hasEvent = true;
         }
     }
 
-    void move (bool& gameEnd, bool& hitGround, bool& hitPipe) {
+    void move (bool& gameEnd, bool& hitGround, bool& hitPipe, bool &gameStart) {
+        if (!gameStart) {
+            if (up) {
+                posY -= HOVERING;
+            } else {
+                posY += HOVERING;
+            }
+            if (posY <= (SCREEN_HEIGHT - GROUND - bird->getHeight()) / 2 - 7) {
+                up = false;
+            } else if (posY >= (SCREEN_HEIGHT - GROUND - bird->getHeight()) / 2 + 7) {
+                up = true;
+            }
+            return;
+        }
         if (hitPipe) {
             vel = 0.11;
             hitPipe = false;

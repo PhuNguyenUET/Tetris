@@ -6,7 +6,7 @@
 #include <string>
 #include <queue>
 
-//#include "LTexture.cpp"
+#include "ScoreBoard.cpp"
 #include "Pillar.cpp"
 
 using std::string;
@@ -18,19 +18,15 @@ using std::queue;
 class Window {
     private:
     SDL_Renderer* renderer;
-    SDL_Window* window;
     LTexture* background;
 
     Bird* bird = NULL;
+    ScoreBoard* scb = NULL;
+    ScoreNoti* scnt = NULL;
     queue <Pillar*> pillars;
     Pillar* tmp_pillar;
 
-    void init () {
-        SDL_Init(SDL_INIT_EVERYTHING);
-        SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
-
-        window = SDL_CreateWindow("Crappy Bird", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-
+    void init (SDL_Window* &window) {
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -44,21 +40,24 @@ class Window {
         (background)->loadFromFile("Graphics/BackGround.png", renderer);
     } 
 
-    void close () {
+    void change () {
         background -> free();
 
         SDL_DestroyRenderer (renderer);
-        SDL_DestroyWindow (window);
-        window = NULL;
         renderer = NULL;
 
         IMG_Quit();
+    }
+
+    void close (SDL_Window* &window) {
+        SDL_DestroyWindow (window);
+        window = NULL;
         SDL_Quit();
     }
 
     public:
-    Window () {
-        init();
+    Window (SDL_Window* &window, bool& playNext) {
+        init(window);
         
         loadMedia();
 
@@ -69,58 +68,109 @@ class Window {
         tmp_pillar = new Pillar (renderer);
         pillars.push(tmp_pillar);
 
+        scb = new ScoreBoard();
+
         bool quit = false;
         bool gameEnd = false;
         bool hitGround = false;
         bool hitPipe = false;
+        bool gameStart = false;
+        int prevScore = 0;
         int score = 0;
         SDL_Event e;
 
-        while (!quit) {
+        scb->loadFromRenderedText(to_string(score), renderer);
+        scb->render(SCREEN_WIDTH/2, 10, renderer);
+
+        while (!quit && !hitGround) {
             while (SDL_PollEvent(&e) != 0) {
                 if (e.type == SDL_QUIT) {
                     quit = true;
                 } else {
                     if (!gameEnd) {
-                        bird->handleEvent(e);
+                        bird->handleEvent(e, gameStart);
                     }
                 }
             }
-            bird->move(gameEnd, hitGround, hitPipe);
+            bird->move(gameEnd, hitGround, hitPipe, gameStart);
 
-            Pillar* prev = pillars.back();
-            if (prev -> getPosX() <= SCREEN_WIDTH - 220) {
-                tmp_pillar = new Pillar(renderer);
-                pillars.push(tmp_pillar);
+            if (gameStart) {
+                Pillar* prev = pillars.back();
+                if (prev -> getPosX() <= SCREEN_WIDTH - 220) {
+                    tmp_pillar = new Pillar(renderer);
+                    pillars.push(tmp_pillar);
+                }
+
+                if (pillars.front() -> getPosX() <= -tmp_pillar -> getWidth()) {
+                    pillars.pop();
+                } 
             }
-
-            if (pillars.front() -> getPosX() <= -tmp_pillar -> getWidth()) {
-                pillars.pop();
-            } 
 
             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
             SDL_RenderClear(renderer);
 
             background->render(0,0,renderer);
 
-            int n = pillars.size();
-            for (int i = 0; i < n; i++) {
-                Pillar* pillar = pillars.front();
+            if (gameStart) {
+                int n = pillars.size();
+                for (int i = 0; i < n; i++) {
+                    Pillar* pillar = pillars.front();
 
-                pillar->handleCollision(gameEnd, bird, hitPipe);
-                pillar -> updateScore(bird, score);
-                pillar->move(gameEnd);
-                pillar->render(renderer);
+                    pillar->handleCollision(gameEnd, bird, hitPipe);
+                    pillar -> updateScore(bird, score);
+                    pillar->move(gameEnd);
+                    pillar->render(renderer);
 
-                pillars.pop();
-                pillars.push(pillar);
+                    pillars.pop();
+                    pillars.push(pillar);
+                }
             }
 
             bird->render(renderer);
 
+            if (score != prevScore) {
+                scb->loadFromRenderedText(to_string(score), renderer);
+                prevScore = score;
+            }
+
+            if (gameStart) {
+                scb->render((SCREEN_WIDTH - scb -> getWidth())/2,10,renderer);
+            }
+
             SDL_RenderPresent(renderer);
         }
+        
+        if (quit) {
+            change();
+            close(window);
+        }
+        if (hitGround) {
+            const int PLAYSPACE = SCREEN_HEIGHT - GROUND;
+            scb->close();
+            scnt = new ScoreNoti(renderer);
+            scnt->loadFromRenderedText(to_string(score), renderer);
+            //SDL_Event e;
+            while (!quit && !playNext) {
+                while (SDL_PollEvent(&e) != 0) {
+                    if (e.type == SDL_QUIT) {
+                        quit = true;
+                    } else {
+                        scnt->handleEvent(e, playNext);
+                    }
+                }
+                scnt -> render((SCREEN_WIDTH - scnt->getWidth()) / 2, (PLAYSPACE - scnt->getHeight()) / 2, renderer);
+                SDL_RenderPresent(renderer);
+            }
 
-        close();
+            if (quit) {
+                change ();
+                scnt->close();
+                close (window);
+            } else {
+                scnt->close();
+                change();
+            }
+        }
+
     }
 };
