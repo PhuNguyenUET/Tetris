@@ -43,6 +43,30 @@ class Paddle {
         }
     }
 
+    void selfMove (SDL_Rect pad, SDL_Rect ball) {
+        int bTop = ball.y;
+        int bBot = ball.y + ball.h;
+
+        int pTop = pad.y;
+        int pBot = pad.y + pad.h;
+
+        if (pTop > bBot) {
+            pVelY = -PADDLE_VEL; 
+        } else if (pBot < bTop) {
+            pVelY = PADDLE_VEL;
+        } else {
+            pVelY = 0;
+        }
+
+        pY += pVelY;
+        pCollider.y = pY;
+        if ((pY < 0) || (pY + PHEIGHT > SCREEN_HEIGHT)) {
+            pY -= pVelY;
+            pCollider.y = pY;
+            pVelY = 0;
+        }
+    }
+
     void handleEvent (SDL_Event& e) {
         if (e.type == SDL_KEYDOWN && e.key.repeat == 0) {
             switch(e.key.keysym.sym) {

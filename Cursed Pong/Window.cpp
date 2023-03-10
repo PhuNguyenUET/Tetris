@@ -4,6 +4,7 @@
 #include <SDL2/SDL_mixer.h>
 
 #include "Paddle.cpp"
+#include "Ball.cpp"
 
 using std::string;
 using std::cout;
@@ -14,6 +15,7 @@ class Window {
     SDL_Renderer* renderer;
     Paddle* player1;
     Paddle* player2;
+    Ball* ball; 
 
     void init () {
         SDL_Init(SDL_INIT_EVERYTHING);
@@ -45,7 +47,7 @@ class Window {
 
         player1 = new Paddle(0);
         player2 = new Paddle(SCREEN_WIDTH - (*player2).PWIDTH);
-
+        ball = new Ball();
         bool quit = false;
         SDL_Event e;
 
@@ -59,13 +61,15 @@ class Window {
             }
 
             player1->move();
-            player2->move();
+            ball->move(player1 -> getCollider(), player2 -> getCollider());
+            player2->selfMove(player2->getCollider(), ball -> getCollider());
 
             SDL_SetRenderDrawColor (renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
 
             player1->render(renderer);
             player2->render(renderer);
+            ball->render(renderer);
 
             SDL_RenderPresent(renderer);
         }
