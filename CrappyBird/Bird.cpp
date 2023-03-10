@@ -23,7 +23,7 @@ class Bird {
     LTexture* bird = NULL;
 
     public:
-    const double GRAVITY = 0.00007;
+    const double GRAVITY = 0.00008;
     double posX;
     double posY;
     double vel;
@@ -110,7 +110,7 @@ class Bird {
         }
         vel += GRAVITY;
         if (!hasEvent) {
-            if (!hitGround && vel > 0.08) {
+            if (!hitGround && vel > 0.07) {
                 if (angle < 90) {
                     angle += ANGLE_CHANGE;
                 } else {

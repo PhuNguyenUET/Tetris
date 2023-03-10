@@ -4,7 +4,6 @@
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
 
-#include "Window.cpp"
 #include "TitleScreen.cpp"
 
 using std::string;
@@ -17,12 +16,14 @@ int main (int argc, char* args[]) {
 
     SDL_Window* window;
     bool playNext = false;
+    bool quit = false;
 
-    TitleScreen* ttsc = new TitleScreen(window);
-    ttsc->close();
-
-    do {
-        playNext = false;
-        new Window(window, playNext);
-    } while (playNext);
+    TitleScreen* ttsc = new TitleScreen(window, quit);
+    
+    if (!quit) {
+        do {
+            playNext = false;
+            new Window(window, playNext, quit);
+        } while (playNext && !quit);
+    }
 }

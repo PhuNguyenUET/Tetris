@@ -5,10 +5,8 @@
 #include <SDL2/SDL_ttf.h>
 #include <string>
 
-// #include "LTexture.cpp"
-
-const int SCREEN_WIDTH_B = 500;
-const int SCREEN_HEIGHT_B = 750;
+#include "Window.cpp"
+#include "Button.cpp"
 
 using std::string;
 using std::cout;
@@ -18,18 +16,27 @@ using std::to_string;
 class TitleScreen {
     private:
         SDL_Renderer* renderer;
+        Button* but;
+        LTexture* backGround;
+        LTexture* introFont;
+
 
     public:
         void init (SDL_Window* &window) {
             SDL_Init (SDL_INIT_EVERYTHING);
             SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
-            window = SDL_CreateWindow("Crappy Bird", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH_B, SCREEN_HEIGHT_B, SDL_WINDOW_SHOWN);
+            window = SDL_CreateWindow("Crappy Bird", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
             SDL_SetRenderDrawColor (renderer, 0, 0, 0, 255);
             int imgFlag = IMG_INIT_PNG;
             IMG_Init(imgFlag);
+        }
+
+        void loadMedia () {
+            backGround->loadFromFile("Graphics/BackGround.png", renderer);
+            introFont->loadFromFile("Graphics/CrappyFont.png", renderer);
         }
 
         void close () {
@@ -39,7 +46,49 @@ class TitleScreen {
             IMG_Quit();
         }
 
-        TitleScreen (SDL_Window* &window) {
+        void kill (SDL_Window* &window) {
+            SDL_DestroyWindow(window);
+            window = NULL;
+            SDL_Quit();
+        }
+
+        TitleScreen (SDL_Window* &window, bool &quit) {
             init (window);
+
+            but = new Button(renderer);
+            backGround = new LTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
+            introFont = new LTexture(500, 250);
+
+            loadMedia();
+
+            but->setPos(100, 350);
+
+            bool change = false;
+            SDL_Event e;
+
+            while (!quit && !change) {
+                while (SDL_PollEvent(&e) != 0) {
+                    if (e.type == SDL_QUIT) {
+                        quit = true;
+                    } else {
+                        but->handleEvent(e, change);
+                    }
+                } 
+
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                SDL_RenderClear(renderer);
+
+                backGround->render(0, 0, renderer);
+                introFont->render(0, 50, renderer);
+                but->render(renderer);
+
+                SDL_RenderPresent(renderer);
+            }
+            if (quit) {
+                close();
+                kill(window);
+            } else {
+                close();
+            }
         }
 };

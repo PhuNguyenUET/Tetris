@@ -56,7 +56,7 @@ class Window {
     }
 
     public:
-    Window (SDL_Window* &window, bool& playNext) {
+    Window (SDL_Window* &window, bool& playNext, bool& quit) {
         init(window);
         
         loadMedia();
@@ -70,7 +70,6 @@ class Window {
 
         scb = new ScoreBoard();
 
-        bool quit = false;
         bool gameEnd = false;
         bool hitGround = false;
         bool hitPipe = false;
