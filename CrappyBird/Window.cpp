@@ -59,7 +59,7 @@ class Window {
         loadMedia();
 
         bird = new Bird(renderer);
-        bird->setX(20);
+        bird->setX(SCREEN_WIDTH/2 - bird->getWidth());
         bird->setY((SCREEN_HEIGHT - GROUND - bird->getHeight()) / 2);
 
         bool quit = false;

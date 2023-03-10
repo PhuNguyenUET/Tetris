@@ -14,9 +14,10 @@ using std::to_string;
 
 class Bird {
     private:
-    const double GRAVITY = 0.2;
-    const double VERTI_VELOCITY = 0.3;
+    const double GRAVITY = 0.00006;
+    const double VERTI_VELOCITY = 0.08;
     const double HORI_VELOCITY = 0.2; 
+    const double VERTI_RISE = 40;
 
     LTexture* bird = NULL;
     double posX;
@@ -57,30 +58,28 @@ class Bird {
         return bird->getHeight();
     }
 
+    int getWidth () {
+        return bird -> getWidth();
+    }
+
     void handleEvent (SDL_Event& e) {
         if (e.type == SDL_KEYDOWN && e.key.repeat == 0) {
             if (e.key.keysym.sym == SDLK_SPACE || e.key.keysym.sym == SDLK_UP) {
-                vel = - VERTI_VELOCITY;
+                vel = -VERTI_VELOCITY;
             } 
         } else if (e.type == SDL_MOUSEBUTTONDOWN) {
-            vel = - VERTI_VELOCITY;
-        }
-        if (e.type == SDL_KEYUP && e.key.repeat == 0) {
-            if (e.key.keysym.sym == SDLK_SPACE || e.key.keysym.sym == SDLK_UP) {
-                vel = VERTI_VELOCITY;
-            } 
-        } else if (e.type == SDL_MOUSEBUTTONUP) {
-            vel = VERTI_VELOCITY;
+            vel = -VERTI_VELOCITY;
         }
     }
 
     void move () {
         posY += vel;
         bCollider.y = posY;
-        if ((posY < 0) || (posY + bird->getHeight() > SCREEN_HEIGHT - GROUND)) {
+        if ((posY + bird->getHeight() > SCREEN_HEIGHT - GROUND)) {
             posY -= vel;
             bCollider.y = posY;
         }
+        vel += GRAVITY;
     } 
 
     Bird (SDL_Renderer* &renderer) {
