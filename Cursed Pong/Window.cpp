@@ -17,6 +17,7 @@ using std::to_string;
 
 class Window {
     Mix_Music *music = NULL;
+    Mix_Chunk* referee = NULL;
     SDL_Window* window;
     SDL_Renderer* renderer;
     Paddle* player1;
@@ -49,12 +50,17 @@ class Window {
         music = Mix_LoadMUS("Audio/Mario.wav");
         Mix_PlayMusic(music, -1);
 
+        referee = Mix_LoadWAV("Audio/Referee.wav");
+
         TTF_Init();
     }   
 
     void close () {
         Mix_FreeMusic(music);
         music = NULL;
+
+        Mix_FreeChunk(referee);
+        referee = NULL;
 
         SDL_DestroyRenderer(renderer);
         renderer = NULL;
@@ -131,6 +137,7 @@ class Window {
             SDL_RenderPresent(renderer);
 
             if (inGame == true && !ball->isBallInGame(score1, score2)) {
+                Mix_PlayChannel(-1, referee, 0);
                 timeMark = SDL_GetTicks();
                 inGame = false;
                 player2 -> forceStop();
