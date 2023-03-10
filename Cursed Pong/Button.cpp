@@ -9,6 +9,13 @@ using std::string;
 using std::cout;
 using std::endl;
 
-class TitleScreen {
+class Button {
+    private:
+        SDL_Point position;
+        
+    public:
+        Button () {
+
+        }
 
 };

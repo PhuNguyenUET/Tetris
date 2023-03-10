@@ -110,10 +110,10 @@ class Window {
             SDL_SetRenderDrawColor (renderer, 0, 0, 0, 255);
             if ((score1 != score1prev) || (score2 != score2prev)) {
                 if (score1 >= 10 && scorePlayer1->getWidth() != 80) {
-                    scorePlayer1->setWidth(100);
+                    scorePlayer1->setWidth(80);
                 }
                 if (score2 >= 10 && scorePlayer2->getWidth() != 80) {
-                    scorePlayer2->setWidth(100);
+                    scorePlayer2->setWidth(80);
                 }
                 score1prev = score1;
                 score2prev = score2;
@@ -148,6 +148,8 @@ class Window {
                 scorePlayer2->close();
             }
         }
+
+        close();
     }
 
 };
