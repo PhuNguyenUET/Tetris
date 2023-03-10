@@ -21,7 +21,7 @@ class Button {
     public:
         Button (SDL_Renderer* renderer) {
             position.x = 300;
-            position.y = 300;
+            position.y = 170;
             string path = "Graphics/PlayButton3.png";
             SDL_Surface* loadedSurface = IMG_Load (path.c_str());
             buttonGraphics = SDL_CreateTextureFromSurface(renderer, loadedSurface);

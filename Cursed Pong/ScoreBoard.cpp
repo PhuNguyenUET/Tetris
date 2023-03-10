@@ -31,7 +31,7 @@ class ScoreBoard {
         }
 
         void loadFromRenderedText (string textureText, SDL_Renderer* &renderer) {
-            //free();
+            free();
 
             SDL_Color textColor = {255, 255, 255, 255};
             SDL_Surface* textSurface = TTF_RenderText_Solid(font, textureText.c_str(), textColor);
