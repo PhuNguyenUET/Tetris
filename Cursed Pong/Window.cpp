@@ -25,6 +25,8 @@ class Window {
     ScoreBoard* scorePlayer1;
     ScoreBoard* scorePlayer2; 
 
+    int score1prev = 0;
+    int score2prev = 0;
     int score1 = 0;
     int score2 = 0;
     string score1s;
@@ -80,6 +82,9 @@ class Window {
         int timeMark = 0;
         SDL_Event e;
 
+        scorePlayer1->loadFromRenderedText("0", renderer);
+        scorePlayer2->loadFromRenderedText("0", renderer);
+
         while (!quit) {
             while (SDL_PollEvent(&e) != 0) {
                 if (e.type == SDL_QUIT) {
@@ -90,7 +95,7 @@ class Window {
             }
 
             player1->move();
-            ball->move(player1 -> getCollider(), player2 -> getCollider(), score1, score2);
+            ball->move(player1 -> getCollider(), player2 -> getCollider());
             if (inGame == true) {
                 player2->selfMove(player2->getCollider(), ball);
             }
@@ -103,20 +108,29 @@ class Window {
                 SDL_RenderDrawLine(renderer, SCREEN_WIDTH/2, i, SCREEN_WIDTH/2, i + 15);
             }
             SDL_SetRenderDrawColor (renderer, 0, 0, 0, 255);
-
-            score1s = to_string(score1);
-            score2s = to_string(score2);
-            //scorePlayer1->loadFromRenderedText("0", renderer);
-            //scorePlayer2->loadFromRenderedText("0", renderer);
-            //scorePlayer1->render(300, 30, renderer);
-            //scorePlayer2->render(600, 30, renderer);
+            if ((score1 != score1prev) || (score2 != score2prev)) {
+                if (score1 >= 10 && scorePlayer1->getWidth() != 80) {
+                    scorePlayer1->setWidth(100);
+                }
+                if (score2 >= 10 && scorePlayer2->getWidth() != 80) {
+                    scorePlayer2->setWidth(100);
+                }
+                score1prev = score1;
+                score2prev = score2;
+                score1s = to_string(score1);
+                score2s = to_string(score2);
+                scorePlayer1->loadFromRenderedText(score1s, renderer);
+                scorePlayer2->loadFromRenderedText(score2s, renderer);
+            }
+            scorePlayer1->render(300, 20, renderer);
+            scorePlayer2->render(460, 20, renderer);
             player1->render(renderer);
             player2->render(renderer);
             ball->render(renderer);
 
             SDL_RenderPresent(renderer);
 
-            if (inGame == true && !ball->isBallInGame()) {
+            if (inGame == true && !ball->isBallInGame(score1, score2)) {
                 timeMark = SDL_GetTicks();
                 inGame = false;
                 player2 -> forceStop();

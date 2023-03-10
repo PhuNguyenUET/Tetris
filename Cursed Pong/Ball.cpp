@@ -54,7 +54,7 @@ class Ball {
         }
 
 
-        void move (SDL_Rect const &pad1, SDL_Rect const &pad2, int& score1, int& score2) {
+        void move (SDL_Rect const &pad1, SDL_Rect const &pad2) {
             bX += bVelX;
             bCollider.x = bX;
 
@@ -64,10 +64,8 @@ class Ball {
                 bool p2 = checkCollision(bCollider, pad2);
                 int state;
                 if (p1) {
-                    score1 ++;
                     state = collisionPos(bCollider, pad1);
                 } else if (p2) {
-                    score2 ++;
                     state = collisionPos(bCollider, pad2);
                 }
                 bX -= bVelX;
@@ -158,8 +156,12 @@ class Ball {
         }
 
 
-        bool isBallInGame () {
-            if (bX + BALL_WIDTH < 0 || (bX > SCREEN_WIDTH)) {
+        bool isBallInGame (int& score1, int& score2) {
+            if (bX + BALL_WIDTH < 0) {
+                score2 ++;
+                return false;
+            } else if (bX > SCREEN_WIDTH) {
+                score1 ++;
                 return false;
             } else {
                 return true;

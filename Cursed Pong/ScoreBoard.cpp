@@ -11,16 +11,16 @@ using std::endl;
 
 class ScoreBoard {
     private:
-        SDL_Texture* scoreTexture; 
+        SDL_Texture* scoreTexture = NULL; 
         TTF_Font* font = NULL;
 
-        const int WIDTH = 50;
-        const int HEIGHT = 50;
+        int width = 40;
+        const int HEIGHT = 60;
 
     public:
         ScoreBoard() {
             TTF_Init();
-            font = TTF_OpenFont("Font/Font.ttf", 40);
+            font = TTF_OpenFont("Font/Font.ttf", 50);
         }
 
         void free() {
@@ -31,7 +31,7 @@ class ScoreBoard {
         }
 
         void loadFromRenderedText (string textureText, SDL_Renderer* &renderer) {
-            free();
+            //free();
 
             SDL_Color textColor = {255, 255, 255, 255};
             SDL_Surface* textSurface = TTF_RenderText_Solid(font, textureText.c_str(), textColor);
@@ -47,7 +47,14 @@ class ScoreBoard {
         }
 
         void render (int x, int y, SDL_Renderer* &renderer) {
-            SDL_Rect renderQuad = {x, y, WIDTH, HEIGHT};
+            SDL_Rect renderQuad = {x, y, width, HEIGHT};
             SDL_RenderCopy (renderer, scoreTexture, NULL, &renderQuad);
+        }
+        int getWidth () {
+            return width;
+        }
+
+        void setWidth (int w) {
+            width = w;
         }
 };
