@@ -59,7 +59,6 @@ class Window {
                     quit = true;
                 } else {
                     player1->handleEvent(e);
-                    player2->handleEvent(e);
                 }
             }
 

@@ -77,6 +77,9 @@ class Ball {
                         case 3:
                             bVelY = bIniVel;
                             break;
+                        default:
+                            bVelY = -bIniVel;
+                            break;
                     } 
                 } else if (p2) {
                     switch (state) {
@@ -88,6 +91,9 @@ class Ball {
                             break;
                         case 3:
                             bVelY = bIniVel;
+                            break;
+                        default:
+                            bVelY = -bIniVel;
                             break;
                     }
                 }
@@ -171,7 +177,7 @@ class Ball {
 
             if (bRelP >= padInit && bRelP <= padTop) {
                 return 1;
-            } else if (bRelP >= padTop && bRelP <= padMid) {
+            } else if (bRelP > padTop && bRelP < padMid) {
                 return 2;
             } else if (bRelP >= padMid && bRelP <= padBot) {
                 return 3;
