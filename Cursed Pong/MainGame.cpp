@@ -5,6 +5,7 @@
 
 #include "Window.cpp"
 #include "TitleScreen.cpp"
+#include "ResultScreen.cpp"
 
 using std::string;
 using std::cout;
@@ -13,9 +14,17 @@ using std::endl;
 int main (int argc, char* args[]) {
     SDL_Window* window;
     bool shutDown = false;
+    bool win = false;
+    bool con = true;
+
     srand(time(0));
     new TitleScreen(window, shutDown);
     if (!shutDown) {
-        new Window(window);
+        while (con && !shutDown) {
+            new Window(window, shutDown, win);
+            if (!shutDown) {
+                new ResultScreen(window, win, con);
+            }
+        }
     }
 }

@@ -17,6 +17,7 @@ class Button {
         const int BUTTON_WIDTH = 200;
         const int BUTTON_HEIGHT = 200;
         SDL_Texture* buttonGraphics;
+        Mix_Chunk* butHit = NULL;
         SDL_Point position;
     public:
         Button (SDL_Renderer* renderer) {
@@ -26,6 +27,11 @@ class Button {
             SDL_Surface* loadedSurface = IMG_Load (path.c_str());
             buttonGraphics = SDL_CreateTextureFromSurface(renderer, loadedSurface);
             SDL_FreeSurface(loadedSurface);
+
+            Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+
+            butHit = Mix_LoadWAV("Audio/Button_hit.wav");
+
         }
 
         void setPosition (int x, int y) {
@@ -51,6 +57,7 @@ class Button {
                 }
 
                 if (inside) {
+                    Mix_PlayChannel(-1, butHit, 0);
                     quit = true;
                 }
             }

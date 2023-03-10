@@ -54,6 +54,11 @@ class Window {
     }   
 
     void close (SDL_Window* &window) {
+        SDL_DestroyWindow(window);
+        window = NULL;
+    }
+
+    void change () {
         Mix_FreeMusic(music);
         music = NULL;
 
@@ -63,17 +68,13 @@ class Window {
         SDL_DestroyRenderer(renderer);
         renderer = NULL;
 
-        SDL_DestroyWindow(window);
-        window = NULL;
-
         IMG_Quit();
-        SDL_Quit();
         Mix_Quit();
         TTF_Quit();
     }
 
     public: 
-    Window (SDL_Window* &window) {
+    Window (SDL_Window* &window, bool& shutDown, bool& win) {
         init (window);
 
         player1 = new Paddle(0);
@@ -89,10 +90,10 @@ class Window {
         scorePlayer1->loadFromRenderedText("0", renderer);
         scorePlayer2->loadFromRenderedText("0", renderer);
 
-        while (!quit) {
+        while (!quit && !shutDown) {
             while (SDL_PollEvent(&e) != 0) {
                 if (e.type == SDL_QUIT) {
-                    quit = true;
+                    shutDown = true;
                 } else {
                     player1->handleEvent(e);
                 }
@@ -147,14 +148,27 @@ class Window {
                 inGame = true;
             }
 
-            if (quit) {
+            if (score2 >= 11) {
+                quit = true;
+                win = false;
+            } else if (score1 >= 11) {
+                quit = true;
+                win = true;
+            }
+
+            if (quit || shutDown) {
                 ball->close();
                 scorePlayer1->close();
                 scorePlayer2->close();
             }
         }
 
-        close(window);
+        if (shutDown) {
+            change();
+            close(window);
+        } else {
+            change();
+        }
     }
 
 };
