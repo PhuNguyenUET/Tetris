@@ -12,7 +12,10 @@ using std::endl;
 
 int main (int argc, char* args[]) {
     SDL_Window* window;
+    bool shutDown = false;
     srand(time(0));
-    new TitleScreen();
-    new Window();
+    new TitleScreen(window, shutDown);
+    if (!shutDown) {
+        new Window(window);
+    }
 }

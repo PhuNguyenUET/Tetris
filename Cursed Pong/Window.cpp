@@ -18,7 +18,6 @@ using std::to_string;
 class Window {
     Mix_Music *music = NULL;
     Mix_Chunk* referee = NULL;
-    SDL_Window* window;
     SDL_Renderer* renderer;
     Paddle* player1;
     Paddle* player2;
@@ -33,11 +32,10 @@ class Window {
     string score1s;
     string score2s;
 
-    void init () {
+    void init (SDL_Window* &window) {
         SDL_Init(SDL_INIT_EVERYTHING);
         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
-        window = SDL_CreateWindow("Cursed Pong", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
         SDL_SetRenderDrawColor (renderer, 0, 0, 0, 255);
@@ -55,7 +53,7 @@ class Window {
         TTF_Init();
     }   
 
-    void close () {
+    void close (SDL_Window* &window) {
         Mix_FreeMusic(music);
         music = NULL;
 
@@ -75,8 +73,8 @@ class Window {
     }
 
     public: 
-    Window () {
-        init ();
+    Window (SDL_Window* &window) {
+        init (window);
 
         player1 = new Paddle(0);
         player2 = new Paddle(SCREEN_WIDTH - (*player2).PWIDTH);
@@ -156,7 +154,7 @@ class Window {
             }
         }
 
-        close();
+        close(window);
     }
 
 };

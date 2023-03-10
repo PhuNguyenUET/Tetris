@@ -13,7 +13,6 @@ using std::endl;
 
 class TitleScreen {
     private:
-        SDL_Window* titleWindow;
         SDL_Renderer* titleRenderer;
         Mix_Music* music = NULL;
         Mix_Chunk* buttonHit = NULL;
@@ -22,7 +21,7 @@ class TitleScreen {
         SDL_Texture* recommend;
 
     public: 
-        void init () {
+        void init (SDL_Window*& titleWindow) {
             SDL_Init(SDL_INIT_EVERYTHING);
             SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
@@ -48,26 +47,23 @@ class TitleScreen {
             SDL_DestroyRenderer(titleRenderer);
             titleRenderer = NULL;
 
-            SDL_DestroyWindow(titleWindow);
-            titleWindow = NULL;
-
             IMG_Quit();
             Mix_Quit();
             TTF_Quit();
         }
 
-        TitleScreen () {
-            init();
+        TitleScreen (SDL_Window* &window, bool& shutDown) {
+            init(window);
 
             playButton = new Button(titleRenderer);
 
             bool quit = false;
             SDL_Event e;
 
-            while (!quit) {
+            while (!quit && !shutDown) {
                 while (SDL_PollEvent(&e)) {
                     if (e.type == SDL_QUIT) {
-                        quit = true;
+                        shutDown = true;
                     } else {
                         playButton->handleEvent(&e, quit);
                     }
@@ -80,9 +76,14 @@ class TitleScreen {
 
                 SDL_RenderPresent(titleRenderer);
             }
-
-            playButton->close();
-            close();
+            if (!shutDown) {
+                playButton->close();
+                close();
+            } else {
+                SDL_DestroyWindow(window);
+                window = NULL;
+                SDL_Quit();
+            }
         }
 
 };
