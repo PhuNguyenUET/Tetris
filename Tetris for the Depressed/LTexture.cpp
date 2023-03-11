@@ -10,17 +10,17 @@ using std::cout;
 using std::endl;
 using std::to_string;
 
-const int SCREEN_WIDTH = 320;
-const int SCREEN_HEIGHT = 480;
+const int SCREEN_WIDTH = 480;
+const int SCREEN_HEIGHT = 720;
 
 const int PLAY_COL = 10;
 const int PLAY_ROW = 20;
 
-const int PLAYSPACE_WIDTH = 400;
-const int PLAYSPACE_HEIGHT = 500;
-
 class LTexture {
     public:
+    int orgiWidth;
+    int orgiHeight;
+
     LTexture(int width, int height) {
         mTexture = NULL;
         mWidth = width;
@@ -45,6 +45,9 @@ class LTexture {
 
         newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
 
+        orgiHeight = loadedSurface->h;
+        orgiWidth = loadedSurface->w;
+
         if (mWidth == 0) {
             mWidth = loadedSurface -> w;
         }
@@ -68,8 +71,8 @@ class LTexture {
         SDL_Rect renderQuad = {x, y, mWidth, mHeight};
         SDL_RendererFlip flip = SDL_FLIP_NONE;
         if (clip != NULL) {
-            renderQuad.w = clip->w;
-            renderQuad.h = clip->h;
+            renderQuad.w = mWidth * (double)clip -> w / (double)orgiWidth;
+            renderQuad.h = mHeight * (double)clip -> h / (double)orgiHeight;
         }
         SDL_RenderCopyEx(renderer, mTexture, clip, &renderQuad, angle, center, flip);
     }

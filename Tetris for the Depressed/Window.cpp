@@ -6,6 +6,7 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "Board.cpp"
+#include "ScoreBoard.cpp"
 
 using std::string;
 using std::cout;
@@ -18,6 +19,8 @@ class Window {
         SDL_Window* window;
         SDL_Renderer* renderer;
         LTexture* bg = NULL;
+        ScoreBoard* lineBoard;
+        ScoreBoard* scoreBoard;
 
         Shape* shape;
         Board* brd;
@@ -68,11 +71,25 @@ class Window {
             loadMedia();
 
             bool quit = false;
+            bool startCount = true;
             SDL_Event e;
             int prevTime = 0;
+            int lines = 0;
+            int score = 0;
+            int prevLines = lines;
+            int prevScore = score;
+            int prevLockTime = 0;
 
-            shape = new Shape();
+            shape = new Shape(board, quit);
             brd = new Board(renderer);
+            scoreBoard = new ScoreBoard(170, 50);
+            lineBoard = new ScoreBoard(110, 50);
+
+            scoreBoard->loadFromRenderedText("Your score: " + to_string(score), renderer);
+            scoreBoard->render((SCREEN_WIDTH - 170) / 2, SCREEN_HEIGHT - 80, renderer);
+
+            lineBoard->loadFromRenderedText("Lines: " + to_string(lines), renderer);
+            lineBoard->render((SCREEN_WIDTH - 120) / 2, SCREEN_HEIGHT - 120, renderer);
 
             while (!quit) {
                 int time = SDL_GetTicks();
@@ -85,15 +102,39 @@ class Window {
                     }
                 }
 
+                if (score != prevScore) {
+                    scoreBoard->loadFromRenderedText("Your score: " + to_string(score), renderer);
+                    prevScore = score;
+                }
+
+                if (lines != prevLines) {
+                    lineBoard->loadFromRenderedText("Lines: " + to_string(lines), renderer);
+                    prevLines = lines;
+                }
+
                 if (time - prevTime >= 700) {
-                    shape->fall();
+                    if (!shape->checkMerge(board)) {  
+                        shape->fall(startCount);
+                    }
                     prevTime = time;
                 }
 
-                if (shape->checkMerge(board)) {
+                if (startCount) {
+                    prevLockTime = time;
+                }
+
+                if (merge) {
                     shape->updateBoard(board);
                     shape->merge(board);
-                    shape = new Shape();
+                    shape = new Shape(board, quit);
+                } else if (shape->checkMerge(board)) {
+                    startCount = false;
+                    if (time - prevLockTime >= 500) {
+                        shape->updateBoard(board);
+                        shape->merge(board);
+                        shape = new Shape(board, quit);
+                        startCount = true;
+                    }
                 }
 
                 if (brd->isGameOver(board)) {
@@ -107,7 +148,10 @@ class Window {
 
                 shape->updateBoard(board);
 
-                brd->clearLines(board, rowState);
+                scoreBoard->render((SCREEN_WIDTH - 170) / 2, SCREEN_HEIGHT - 80, renderer);
+                lineBoard->render((SCREEN_WIDTH - 120) / 2, SCREEN_HEIGHT - 120, renderer);
+
+                brd->clearLines(board, rowState, lines, score);
                 brd->render(board, renderer);
 
                 SDL_RenderPresent(renderer);

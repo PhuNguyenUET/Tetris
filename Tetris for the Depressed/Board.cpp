@@ -26,7 +26,7 @@ class Board {
         }
 
         void loadMedia (SDL_Renderer* &renderer) {
-            tiles = new LTexture();
+            tiles = new LTexture(27 * 8, 27);
             tiles->loadFromFile("Graphics/tiles.png", renderer);
 
             for (int i = 0; i < 8; i++) {
@@ -64,9 +64,9 @@ class Board {
                 for (int j = 0; j < PLAY_COL; j++) {
                     if (board[i][j] != 0) {
                         if (board[i][j] < 10) {
-                            tiles->render(j * 18 + 28, i * 18 + 31, renderer, &indTile[board[i][j]]);
+                            tiles->render(j * 27 + 42, i * 27 + 47, renderer, &indTile[board[i][j]]);
                         } else {
-                            tiles->render(j * 18 + 28, i * 18 + 31, renderer, &indTile[board[i][j] - 10]);
+                            tiles->render(j * 27 + 42, i * 27 + 47, renderer, &indTile[board[i][j] - 10]);
                         }
                     }
                 }
@@ -82,7 +82,8 @@ class Board {
             return false;
         }
 
-        void clearLines(vector <vector<int>>& board, vector <bool>& rowState) {
+        void clearLines(vector <vector<int>>& board, vector <bool>& rowState, int& lines, int& score) {
+            int numClear = 0;
             for (int i = 0; i < PLAY_ROW; i++) {
                 bool clear = true;
                 rowState[i] = true;
@@ -97,6 +98,8 @@ class Board {
                     for (int j = 0; j < PLAY_COL; j++) {
                         board[i][j] = 0;
                     }
+                    lines ++;
+                    numClear ++;
                 }
             }
             for (int i = PLAY_ROW - 2; i >= 0; i--) {
@@ -120,6 +123,13 @@ class Board {
                         rowState[idx] = false;
                     }
                 }
+            }
+            if (numClear == 1) {
+                score += 10;
+            } else if (numClear == 2) {
+                score += 12;
+            } else if (numClear > 2) {
+                score += (10* numClear) + ((numClear - 1) * (2 + numClear) * 3 / 4);
             }
         }
 };

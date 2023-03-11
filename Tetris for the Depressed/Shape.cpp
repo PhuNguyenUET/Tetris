@@ -16,7 +16,7 @@ using std::vector;
 using std::max;
 using std::min;
 using std::to_string;
-
+ 
 class Shape {
     private:
         vector <vector <int>> shapes = {
@@ -36,10 +36,11 @@ class Shape {
     public:
         SDL_Point shapeArr[4];
 
-        void fall () {
+        void fall (bool& startCount) {
             for (int i = 0; i < 4; i++) {
                 shapeArr[i].y ++;
             }
+            startCount = true;
         } 
 
         bool checkMerge (vector <vector <int>>& board) {
@@ -148,6 +149,23 @@ class Shape {
                 board[shapeArr[i].y][shapeArr[i].x] = colorIdx;
                 prevShapeArr[i] = shapeArr[i];
             }
+
+            // Fix the dragging bug
+            for (int i = 0; i < PLAY_ROW; i++) {
+                for (int j = 0; j < PLAY_COL; j++) {
+                    if (board[i][j] < 10 && board[i][j] > 0) {
+                        bool check = true;
+                        for (int k = 0; k < 4; k++) {
+                            if (shapeArr[k].y == i && shapeArr[k].x == j) {
+                                check = false;
+                            }
+                        }
+                        if (check) {
+                            board[i][j] = 0;
+                        }
+                    }
+                }
+            }
         }
 
         void hardDrop (vector <vector <int>>& board, bool& merge) {
@@ -178,7 +196,7 @@ class Shape {
             return colorIdx;
         }
 
-        Shape () {
+        Shape (vector <vector<int>>& board, bool& quit) {
             int shapeIdx = rand() % 7;
             colorIdx = rand() % 7 + 1;
 
@@ -188,6 +206,10 @@ class Shape {
 
                 prevShapeArr[i].x = shapeArr[i].x;
                 prevShapeArr[i].y = shapeArr[i].y;
+
+                if (board[shapeArr[i].y][shapeArr[i].x] >= 10) {
+                    quit = true;
+                }
             }
         }
 };
