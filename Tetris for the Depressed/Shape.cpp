@@ -7,7 +7,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
-#include "LTexture.cpp"
+#include "EndGameNoti.cpp"
 
 using std::string;
 using std::cout;
@@ -143,11 +143,17 @@ class Shape {
 
         void updateBoard (vector<vector<int>>& board) {
             for (int i = 0; i < 4; i++) {
-                board[prevShapeArr[i].y][prevShapeArr[i].x] = 0;
+                if (board[prevShapeArr[i].y][prevShapeArr[i].x] < 10) {
+                    board[prevShapeArr[i].y][prevShapeArr[i].x] = 0;
+                }
             }
             for (int i = 0; i < 4; i++) {
-                board[shapeArr[i].y][shapeArr[i].x] = colorIdx;
-                prevShapeArr[i] = shapeArr[i];
+                if (board[shapeArr[i].y][shapeArr[i].x] < 10) {
+                    board[shapeArr[i].y][shapeArr[i].x] = colorIdx;
+                    prevShapeArr[i] = shapeArr[i];
+                } else {
+                    break;
+                }
             }
 
             // Fix the dragging bug
@@ -196,7 +202,7 @@ class Shape {
             return colorIdx;
         }
 
-        Shape (vector <vector<int>>& board, bool& quit) {
+        Shape (vector <vector<int>>& board, bool& end) {
             int shapeIdx = rand() % 7;
             colorIdx = rand() % 7 + 1;
 
@@ -208,7 +214,7 @@ class Shape {
                 prevShapeArr[i].y = shapeArr[i].y;
 
                 if (board[shapeArr[i].y][shapeArr[i].x] >= 10) {
-                    quit = true;
+                    end = true;
                 }
             }
         }

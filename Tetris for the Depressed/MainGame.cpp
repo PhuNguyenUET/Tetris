@@ -5,9 +5,18 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
-#include "Window.cpp"
+#include "TitleScreen.cpp"
 
 int main (int argc, char* args[]) {
     srand (time(0));
-    new Window();
+    SDL_Window* window = NULL;
+
+    bool quit = false;
+    bool playNext = false;
+
+    new TitleScreen(window, quit);
+    do {
+        playNext = false;
+        new Window(window, quit, playNext);
+    } while (!quit && playNext);
 }

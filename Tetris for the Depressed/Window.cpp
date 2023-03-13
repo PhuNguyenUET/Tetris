@@ -16,20 +16,21 @@ using std::to_string;
 
 class Window {
     private:
-        SDL_Window* window;
         SDL_Renderer* renderer;
         LTexture* bg = NULL;
         ScoreBoard* lineBoard;
         ScoreBoard* scoreBoard;
+        EndGameNoti* endGameNoti;
 
         Shape* shape;
         Board* brd;
 
-        void init () {
+        bool end = false;
+
+        void init (SDL_Window* &window) {
             SDL_Init(SDL_INIT_EVERYTHING);
             SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
-            window = SDL_CreateWindow("Tetris for the Depressed", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
 
             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -45,11 +46,15 @@ class Window {
 
         void close () {
             SDL_DestroyRenderer(renderer);
-            SDL_DestroyWindow(window);
             renderer = NULL;
-            window = NULL;
 
             IMG_Quit();
+        }
+
+        void kill (SDL_Window* &window) {
+            SDL_DestroyWindow(window);
+            window = NULL;
+
             SDL_Quit();
         }
 
@@ -57,7 +62,7 @@ class Window {
         vector <vector <int>> board;
         vector <bool> rowState;
 
-        Window () {
+        Window (SDL_Window* &window, bool& quit, bool& playNext) {
             for (int i = 0; i < PLAY_ROW; i++) {
                 vector <int> tmp;
                 for (int j = 0; j < PLAY_COL; j++) {
@@ -67,10 +72,9 @@ class Window {
                 rowState.push_back(true);
             }
 
-            init ();
+            init (window);
             loadMedia();
 
-            bool quit = false;
             bool startCount = true;
             SDL_Event e;
             int prevTime = 0;
@@ -80,7 +84,7 @@ class Window {
             int prevScore = score;
             int prevLockTime = 0;
 
-            shape = new Shape(board, quit);
+            shape = new Shape(board, end);
             brd = new Board(renderer);
             scoreBoard = new ScoreBoard(170, 50);
             lineBoard = new ScoreBoard(110, 50);
@@ -91,7 +95,7 @@ class Window {
             lineBoard->loadFromRenderedText("Lines: " + to_string(lines), renderer);
             lineBoard->render((SCREEN_WIDTH - 120) / 2, SCREEN_HEIGHT - 120, renderer);
 
-            while (!quit) {
+            while (!quit && !end) {
                 int time = SDL_GetTicks();
                 bool merge = false;
                 while (SDL_PollEvent(&e)) {
@@ -126,19 +130,19 @@ class Window {
                 if (merge) {
                     shape->updateBoard(board);
                     shape->merge(board);
-                    shape = new Shape(board, quit);
+                    shape = new Shape(board, end);
                 } else if (shape->checkMerge(board)) {
                     startCount = false;
                     if (time - prevLockTime >= 500) {
                         shape->updateBoard(board);
                         shape->merge(board);
-                        shape = new Shape(board, quit);
+                        shape = new Shape(board, end);
                         startCount = true;
                     }
                 }
 
                 if (brd->isGameOver(board)) {
-                    quit = true;
+                    end = true;
                 }
 
                 SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -156,6 +160,45 @@ class Window {
 
                 SDL_RenderPresent(renderer);
             }
-            close ();
+            if (quit) {
+                close ();
+                kill(window);
+            } else {
+                endGameNoti = new EndGameNoti(renderer);
+
+                while (!quit && !playNext) {
+                    while (SDL_PollEvent(&e)) {
+                        if (e.type == SDL_QUIT) {
+                            quit = true;
+                        } else {
+                            endGameNoti->handleEvent(e, playNext);
+                        }
+                    }
+
+                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                    SDL_RenderClear(renderer);
+
+                    bg->render(0, 0, renderer);
+
+                    brd->render(board, renderer);
+
+                    scoreBoard->render((SCREEN_WIDTH - 170) / 2, SCREEN_HEIGHT - 80, renderer);
+                    lineBoard->render((SCREEN_WIDTH - 120) / 2, SCREEN_HEIGHT - 120, renderer);
+
+                    endGameNoti->render(30, 200, renderer);
+
+                    SDL_RenderPresent(renderer);
+                }
+
+                scoreBoard->close();
+                lineBoard->close();
+                endGameNoti->close();
+                if (quit) {
+                    close ();
+                    kill (window);
+                } else {
+                    close();
+                }
+            }
         }
 };
