@@ -12,7 +12,7 @@ using std::to_string;
 
 const int SCREEN_WIDTH = 500;
 const int SCREEN_HEIGHT = 750;
-const int GROUND = 144;
+const int GROUND = 160;
 
 class LTexture {
     public:

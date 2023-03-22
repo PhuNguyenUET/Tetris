@@ -19,6 +19,8 @@ class Window {
     private:
     SDL_Renderer* renderer;
     LTexture* background;
+    LTexture* ground;
+    SDL_Rect groundRect = {0, 0, SCREEN_WIDTH, GROUND};
 
     Bird* bird = NULL;
     ScoreBoard* scb = NULL;
@@ -37,7 +39,9 @@ class Window {
 
     void loadMedia () {
         background = new LTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
-        (background)->loadFromFile("Graphics/BackGround.png", renderer);
+        (background)->loadFromFile("Graphics/background.png", renderer);
+        ground = new LTexture(1200, GROUND);
+        ground->loadFromFile("Graphics/Ground.png", renderer);
     } 
 
     void change () {
@@ -76,6 +80,7 @@ class Window {
         bool gameStart = false;
         int prevScore = 0;
         int score = 0;
+        double tmp = groundRect.x;
         SDL_Event e;
 
         scb->loadFromRenderedText(to_string(score), renderer);
@@ -109,6 +114,7 @@ class Window {
             SDL_RenderClear(renderer);
 
             background->render(0,0,renderer);
+            ground->render(0, SCREEN_HEIGHT - GROUND, renderer, &groundRect);
 
             if (gameStart) {
                 int n = pillars.size();
@@ -122,6 +128,14 @@ class Window {
 
                     pillars.pop();
                     pillars.push(pillar);
+                }
+                ground -> render(0, SCREEN_HEIGHT - GROUND, renderer, &groundRect);
+                if (!gameEnd) {
+                    groundRect.x = tmp;
+                    tmp += 0.0255;
+                    if (tmp >= 1200 - SCREEN_HEIGHT) {
+                        tmp = 0;
+                    }
                 }
             }
 
