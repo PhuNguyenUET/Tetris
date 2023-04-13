@@ -6,7 +6,6 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "Board.cpp"
-#include "ScoreBoard.cpp"
 
 using std::string;
 using std::cout;
@@ -18,7 +17,6 @@ class Window {
     private:
         SDL_Renderer* renderer;
         LTexture* bg = NULL;
-        ScoreBoard* lineBoard;
         ScoreBoard* scoreBoard;
         EndGameNoti* endGameNoti;
 
@@ -41,7 +39,7 @@ class Window {
 
         void loadMedia () {
             bg = new LTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
-            bg->loadFromFile("Graphics/background.png", renderer);
+            bg->loadFromFile("Graphics/Tetris_BackGround.png", renderer);
         }
 
         void close () {
@@ -86,14 +84,13 @@ class Window {
 
             shape = new Shape(board, end);
             brd = new Board(renderer);
-            scoreBoard = new ScoreBoard(170, 50);
-            lineBoard = new ScoreBoard(110, 50);
+            scoreBoard = new ScoreBoard(170, 50 , 110, 50, renderer);
+            
+            LTexture* playArea = new LTexture(22* 10, 22*20);
+            playArea->loadFromFile("Graphics/PlayArea.png", renderer);
 
-            scoreBoard->loadFromRenderedText("Your score: " + to_string(score), renderer);
-            scoreBoard->render((SCREEN_WIDTH - 170) / 2, SCREEN_HEIGHT - 80, renderer);
-
-            lineBoard->loadFromRenderedText("Lines: " + to_string(lines), renderer);
-            lineBoard->render((SCREEN_WIDTH - 120) / 2, SCREEN_HEIGHT - 120, renderer);
+            scoreBoard->loadFromRenderedText("Your score: " + to_string(score), "Lines: " + to_string(lines), renderer);
+            scoreBoard->render(SCREEN_WIDTH - 350, 300, renderer);
 
             while (!quit && !end) {
                 int time = SDL_GetTicks();
@@ -107,12 +104,8 @@ class Window {
                 }
 
                 if (score != prevScore) {
-                    scoreBoard->loadFromRenderedText("Your score: " + to_string(score), renderer);
+                    scoreBoard->loadFromRenderedText("Your score: " + to_string(score), "Lines: " + to_string(lines), renderer);
                     prevScore = score;
-                }
-
-                if (lines != prevLines) {
-                    lineBoard->loadFromRenderedText("Lines: " + to_string(lines), renderer);
                     prevLines = lines;
                 }
 
@@ -149,14 +142,25 @@ class Window {
                 SDL_RenderClear(renderer);
 
                 bg->render(0, 0, renderer);
+                playArea->render(490, 47, renderer);
 
+                shape->hover(board, merge);
                 shape->updateBoard(board);
 
-                scoreBoard->render((SCREEN_WIDTH - 170) / 2, SCREEN_HEIGHT - 80, renderer);
-                lineBoard->render((SCREEN_WIDTH - 120) / 2, SCREEN_HEIGHT - 120, renderer);
+                scoreBoard->render(SCREEN_WIDTH - 350, 300, renderer);
 
                 brd->clearLines(board, rowState, lines, score);
                 brd->render(board, renderer);
+
+                /*SDL_SetRenderDrawColor(renderer, 51, 153, 255, 255);
+                for (int i = 0; i <= 10; i ++) {
+                    SDL_RenderDrawLine(renderer, 490 + 22*i, 47, 490 + 22*i, 47 + 22 * 20);
+                }
+                for (int j = 0; j <= 20; j++) {
+                    SDL_RenderDrawLine(renderer, 490, 47 + j * 22, 490 + 22*10, 47 + j * 22);
+                }*/
+
+                brd->clearHover(board);
 
                 SDL_RenderPresent(renderer);
             }
@@ -177,13 +181,12 @@ class Window {
 
                     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
                     SDL_RenderClear(renderer);
-
                     bg->render(0, 0, renderer);
+                    playArea->render(490, 47, renderer);
 
                     brd->render(board, renderer);
 
-                    scoreBoard->render((SCREEN_WIDTH - 170) / 2, SCREEN_HEIGHT - 80, renderer);
-                    lineBoard->render((SCREEN_WIDTH - 120) / 2, SCREEN_HEIGHT - 120, renderer);
+                    scoreBoard->render(SCREEN_WIDTH - 350, 300, renderer);
 
                     endGameNoti->render(30, 200, renderer);
 
@@ -191,7 +194,6 @@ class Window {
                 }
 
                 scoreBoard->close();
-                lineBoard->close();
                 endGameNoti->close();
                 if (quit) {
                     close ();

@@ -35,7 +35,7 @@ class TitleScreen {
         }
 
         void loadMedia () {
-            backGround->loadFromFile("Graphics/WaitBackground.png", renderer);
+            backGround->loadFromFile("Graphics/Starting_screen.png", renderer);
             introFont->loadFromFile("Graphics/Logo.png", renderer);
         }
 
@@ -57,7 +57,7 @@ class TitleScreen {
 
             but = new Button(renderer);
             backGround = new LTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
-            introFont = new LTexture(350, 170);
+            introFont = new LTexture(450, 150);
 
             loadMedia();
 
@@ -79,7 +79,7 @@ class TitleScreen {
                 SDL_RenderClear(renderer);
 
                 backGround->render(0, 0, renderer);
-                introFont->render((SCREEN_WIDTH - 350) / 2, 50, renderer);
+                introFont->render((SCREEN_WIDTH - 450) / 2, 50, renderer);
                 but->render(renderer);
 
                 SDL_RenderPresent(renderer);

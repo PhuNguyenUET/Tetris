@@ -26,7 +26,7 @@ class Board {
         }
 
         void loadMedia (SDL_Renderer* &renderer) {
-            tiles = new LTexture(27 * 8, 27);
+            tiles = new LTexture(22 * 8, 22);
             tiles->loadFromFile("Graphics/tiles.png", renderer);
 
             for (int i = 0; i < 8; i++) {
@@ -64,10 +64,27 @@ class Board {
                 for (int j = 0; j < PLAY_COL; j++) {
                     if (board[i][j] != 0) {
                         if (board[i][j] < 10) {
-                            tiles->render(j * 27 + 42, i * 27 + 47, renderer, &indTile[board[i][j]]);
+                            tiles->render(j * 22 + 490, i * 22 + 47, renderer, &indTile[board[i][j]]);
                         } else {
-                            tiles->render(j * 27 + 42, i * 27 + 47, renderer, &indTile[board[i][j] - 10]);
+                            tiles->render(j * 22 + 490, i * 22 + 47, renderer, &indTile[board[i][j] - 10]);
                         }
+                    }
+                    if (board[i][j] == -1) {
+                        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                        SDL_RenderDrawLine(renderer, 490 + 22 * j, 47 + 22 * i, 490 + 22 * (j + 1), 47 + 22 * i);
+                        SDL_RenderDrawLine(renderer, 490 + 22 * (j + 1), 47 + 22 * i, 490 + 22 * (j + 1), 47 + 22 * (i + 1));
+                        SDL_RenderDrawLine(renderer, 490 + 22 * (j + 1), 47 + 22 * (i + 1), 490 + 22 * (j), 47 + 22 * (i + 1));
+                        SDL_RenderDrawLine(renderer, 490 + 22 * j, 47 + 22 * i, 490 + 22 * (j), 47 + 22 * (i + 1));
+                    }
+                }
+            }
+        }
+
+        void clearHover (vector <vector <int>>& board) {
+            for (int i = 0; i < 20; i++) {
+                for (int j = 0; j < 10; j++) {
+                    if (board[i][j] == -1) {
+                        board[i][j] = 0;
                     }
                 }
             }

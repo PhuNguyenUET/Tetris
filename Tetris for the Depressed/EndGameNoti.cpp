@@ -5,7 +5,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <string>
 
-#include "LTexture.cpp";
+#include "ScoreBoard.cpp"
 
 using std::string;
 using std::cout;

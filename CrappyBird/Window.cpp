@@ -39,7 +39,7 @@ class Window {
 
     void loadMedia () {
         background = new LTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
-        (background)->loadFromFile("Graphics/background.png", renderer);
+        (background)->loadFromFile("Graphics/NightGround.png", renderer);
         ground = new LTexture(1200, GROUND);
         ground->loadFromFile("Graphics/Ground.png", renderer);
     } 
@@ -132,8 +132,8 @@ class Window {
                 ground -> render(0, SCREEN_HEIGHT - GROUND, renderer, &groundRect);
                 if (!gameEnd) {
                     groundRect.x = tmp;
-                    tmp += 0.0255;
-                    if (tmp >= 1200 - SCREEN_HEIGHT) {
+                    tmp += 0.032;
+                    if (tmp >= 1070 - SCREEN_HEIGHT) {
                         tmp = 0;
                     }
                 }

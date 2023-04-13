@@ -198,6 +198,39 @@ class Shape {
             merge = true;
         }
 
+        void hover (vector <vector <int>>& board, bool& merge) {
+            SDL_Point whiteLines[4];
+            for (int i = 0; i < 4; i++) {
+                whiteLines[i].x = shapeArr[i].x;
+                whiteLines[i].y = shapeArr[i].y;
+            }
+            if (!merge) {
+                while (true) {
+                    bool brk = false;
+                    for (int i = 0; i < 4; i++) {
+                        if (whiteLines[i].y == PLAY_ROW - 1) {
+                            brk = true;
+                            break;
+                        }
+
+                        if (board[whiteLines[i].y + 1][whiteLines[i].x] >= 10) {
+                            brk = true;
+                            break;
+                        }
+                    }
+                    if (brk) {
+                        break;
+                    }
+                    for (int i = 0; i < 4; i++) {
+                        whiteLines[i].y ++;
+                    }
+                }
+                for (int i = 0; i < 4; i++) {
+                    board[whiteLines[i].y][whiteLines[i].x] = -1;
+                }
+            }
+        }
+
         int getColorIdx () {
             return colorIdx;
         }

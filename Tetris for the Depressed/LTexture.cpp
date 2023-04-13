@@ -10,8 +10,8 @@ using std::cout;
 using std::endl;
 using std::to_string;
 
-const int SCREEN_WIDTH = 480;
-const int SCREEN_HEIGHT = 720;
+const int SCREEN_WIDTH = 1200;
+const int SCREEN_HEIGHT = 615;
 
 const int PLAY_COL = 10;
 const int PLAY_ROW = 20;

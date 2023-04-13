@@ -69,6 +69,7 @@ class LTexture {
         SDL_Rect renderQuad = {x, y, mWidth, mHeight};
         SDL_RendererFlip flip = SDL_FLIP_NONE;
         if (clip != NULL) {
+            // Because the sprite sheet is too big, we need to get the ratio
             renderQuad.w = mWidth * (double)clip -> w / (double)orgiWidth;
             renderQuad.h = mHeight * (double)clip -> h / (double)orgiHeight;
         }
