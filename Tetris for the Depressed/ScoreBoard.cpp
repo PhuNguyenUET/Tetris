@@ -4,7 +4,7 @@
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
 #include <string>
-#include "LTexture.cpp"
+#include "NextBlock.cpp"
 
 using std::string;
 using std::cout;
@@ -17,6 +17,7 @@ class ScoreBoard {
         LTexture* neonBoard;
         SDL_Texture* scoreTexture = NULL;
         SDL_Texture* lineTexture = NULL;
+        SDL_Texture* highTexture = NULL;
         TTF_Font* font = NULL;
 
         int scoreWidth;
@@ -45,7 +46,7 @@ class ScoreBoard {
             }
         }
 
-        void loadFromRenderedText (string scoreText, string lineText, SDL_Renderer* &renderer) {
+        void loadFromRenderedText (string scoreText, string lineText, string highText, SDL_Renderer* &renderer) {
             free ();
 
             SDL_Color color = {51, 51, 255, 255};
@@ -60,6 +61,12 @@ class ScoreBoard {
             lineTexture = SDL_CreateTextureFromSurface(renderer, lineSurface);
 
             SDL_FreeSurface(lineSurface);
+
+            SDL_Surface* highSurface = TTF_RenderText_Solid(font, highText.c_str(), color);
+
+            highTexture = SDL_CreateTextureFromSurface(renderer, highSurface);
+
+            SDL_FreeSurface(highSurface);
         }
 
         void close () {
@@ -71,9 +78,11 @@ class ScoreBoard {
 
         void render (int x, int y, SDL_Renderer* &renderer) {
             neonBoard->render(x, y, renderer);
-            SDL_Rect scoreQuad = {x + (neonEdge - scoreWidth)/2, y + lineHeight + 50, scoreWidth, scoreHeight};
+            SDL_Rect scoreQuad = {x + (neonEdge - scoreWidth)/2, y + lineHeight + 35, scoreWidth, scoreHeight};
             SDL_RenderCopy(renderer, scoreTexture, NULL, &scoreQuad);
-            SDL_Rect lineQuad = {x + (neonEdge - lineWidth)/2, y + 50, lineWidth, lineHeight};
+            SDL_Rect lineQuad = {x + (neonEdge - lineWidth)/2, y + 35, lineWidth, lineHeight};
             SDL_RenderCopy(renderer, lineTexture, NULL, &lineQuad);
+            SDL_Rect highQuad = {x + (neonEdge - scoreWidth)/2, y + lineHeight + scoreHeight + 35, scoreWidth, scoreHeight};
+            SDL_RenderCopy(renderer, highTexture, NULL, &highQuad);
         }
 };

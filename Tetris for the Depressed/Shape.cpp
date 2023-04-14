@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <SDL2/SDL_mixer.h>
 #include <algorithm>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
@@ -235,13 +236,34 @@ class Shape {
             return colorIdx;
         }
 
-        Shape (vector <vector<int>>& board, bool& end) {
+        void generateNextBlock (vector <SDL_Point> &nextShapeArr, int& nxtColorIdx) {
+            int shapeIdx = rand() % 7;
+            nxtColorIdx = rand() % 7 + 1;
+
+            for (int i = 0; i < 4; i++) {
+                nextShapeArr[i].x = shapes[shapeIdx][i] % 2 + 4;
+                nextShapeArr[i].y = shapes[shapeIdx][i] / 2;
+            }
+        }
+
+        Shape () {
             int shapeIdx = rand() % 7;
             colorIdx = rand() % 7 + 1;
 
             for (int i = 0; i < 4; i++) {
                 shapeArr[i].x = shapes[shapeIdx][i] % 2 + 4;
                 shapeArr[i].y = shapes[shapeIdx][i] / 2;
+
+                prevShapeArr[i].x = shapeArr[i].x;
+                prevShapeArr[i].y = shapeArr[i].y;
+            }
+        }
+
+        Shape (vector <vector<int>>& board, bool& end, vector <SDL_Point> &nextShapeArr, int& nxtColorIdx) {
+            colorIdx = nxtColorIdx;
+            for (int i = 0; i < 4; i++) {
+                shapeArr[i].x = nextShapeArr[i].x;
+                shapeArr[i].y = nextShapeArr[i].y;
 
                 prevShapeArr[i].x = shapeArr[i].x;
                 prevShapeArr[i].y = shapeArr[i].y;

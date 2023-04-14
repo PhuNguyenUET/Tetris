@@ -48,7 +48,7 @@ class EndGameNoti {
 
             string text = "Press any key to continue";
 
-            SDL_Color textColor = {0, 0, 0, 255};
+            SDL_Color textColor = {255, 255, 255, 255};
             SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), textColor);
 
             noti = SDL_CreateTextureFromSurface(renderer, textSurface);

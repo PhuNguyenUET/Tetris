@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <fstream>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_image.h>
@@ -11,6 +12,7 @@ using std::string;
 using std::cout;
 using std::endl;
 using std::to_string;
+using std::vector;
 
 
 class Window {
@@ -19,7 +21,11 @@ class Window {
         LTexture* bg = NULL;
         ScoreBoard* scoreBoard;
         EndGameNoti* endGameNoti;
+        NextBlock* nxtBlock = new NextBlock();
 
+        vector <SDL_Point> nextShapeArr = vector <SDL_Point>(4);
+        int nxtColorIdx;
+        int highScore;
         Shape* shape;
         Board* brd;
 
@@ -40,6 +46,7 @@ class Window {
         void loadMedia () {
             bg = new LTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
             bg->loadFromFile("Graphics/Tetris_BackGround.png", renderer);
+            nxtBlock->loadMedia(renderer);
         }
 
         void close () {
@@ -61,6 +68,9 @@ class Window {
         vector <bool> rowState;
 
         Window (SDL_Window* &window, bool& quit, bool& playNext) {
+            std::fstream file ("HighScore.txt");
+            file >> highScore;
+            file.seekg(0);
             for (int i = 0; i < PLAY_ROW; i++) {
                 vector <int> tmp;
                 for (int j = 0; j < PLAY_COL; j++) {
@@ -82,15 +92,18 @@ class Window {
             int prevScore = score;
             int prevLockTime = 0;
 
-            shape = new Shape(board, end);
+            shape = new Shape();
+            shape->generateNextBlock(nextShapeArr, nxtColorIdx);
             brd = new Board(renderer);
             scoreBoard = new ScoreBoard(170, 50 , 110, 50, renderer);
             
             LTexture* playArea = new LTexture(22* 10, 22*20);
             playArea->loadFromFile("Graphics/PlayArea.png", renderer);
 
-            scoreBoard->loadFromRenderedText("Your score: " + to_string(score), "Lines: " + to_string(lines), renderer);
+            scoreBoard->loadFromRenderedText("Your score: " + to_string(score), "Lines: " + to_string(lines), "High score: " + to_string(highScore), renderer);
             scoreBoard->render(SCREEN_WIDTH - 350, 300, renderer);
+
+            nxtBlock->render(SCREEN_WIDTH - 350, 50, renderer, nextShapeArr, nxtColorIdx);
 
             while (!quit && !end) {
                 int time = SDL_GetTicks();
@@ -104,7 +117,7 @@ class Window {
                 }
 
                 if (score != prevScore) {
-                    scoreBoard->loadFromRenderedText("Your score: " + to_string(score), "Lines: " + to_string(lines), renderer);
+                    scoreBoard->loadFromRenderedText("Your score: " + to_string(score), "Lines: " + to_string(lines),"High score: " + to_string(highScore), renderer);
                     prevScore = score;
                     prevLines = lines;
                 }
@@ -123,13 +136,15 @@ class Window {
                 if (merge) {
                     shape->updateBoard(board);
                     shape->merge(board);
-                    shape = new Shape(board, end);
+                    shape = new Shape(board, end, nextShapeArr, nxtColorIdx);
+                    shape->generateNextBlock(nextShapeArr, nxtColorIdx);
                 } else if (shape->checkMerge(board)) {
                     startCount = false;
                     if (time - prevLockTime >= 500) {
                         shape->updateBoard(board);
                         shape->merge(board);
-                        shape = new Shape(board, end);
+                        shape = new Shape(board, end, nextShapeArr, nxtColorIdx);
+                        shape->generateNextBlock(nextShapeArr, nxtColorIdx);
                         startCount = true;
                     }
                 }
@@ -148,8 +163,9 @@ class Window {
                 shape->updateBoard(board);
 
                 scoreBoard->render(SCREEN_WIDTH - 350, 300, renderer);
+                nxtBlock->render(SCREEN_WIDTH - 350, 50, renderer, nextShapeArr, nxtColorIdx);
 
-                brd->clearLines(board, rowState, lines, score);
+                brd->clearLines(board, rowState, lines, score, highScore);
                 brd->render(board, renderer);
 
                 /*SDL_SetRenderDrawColor(renderer, 51, 153, 255, 255);
@@ -164,6 +180,10 @@ class Window {
 
                 SDL_RenderPresent(renderer);
             }
+            if (score >= highScore) {
+                file << score;
+            }
+            file.close();
             if (quit) {
                 close ();
                 kill(window);
@@ -187,8 +207,9 @@ class Window {
                     brd->render(board, renderer);
 
                     scoreBoard->render(SCREEN_WIDTH - 350, 300, renderer);
+                    nxtBlock->render(SCREEN_WIDTH - 350, 50, renderer, nextShapeArr, nxtColorIdx);
 
-                    endGameNoti->render(30, 200, renderer);
+                    endGameNoti->render((SCREEN_WIDTH - 300) / 2, 150, renderer);
 
                     SDL_RenderPresent(renderer);
                 }

@@ -61,7 +61,7 @@ class TitleScreen {
 
             loadMedia();
 
-            but->setPos(100, 350);
+            but->setPos((SCREEN_WIDTH - 300) / 2, 250);
 
             bool change = false;
             SDL_Event e;

@@ -99,7 +99,7 @@ class Board {
             return false;
         }
 
-        void clearLines(vector <vector<int>>& board, vector <bool>& rowState, int& lines, int& score) {
+        void clearLines(vector <vector<int>>& board, vector <bool>& rowState, int& lines, int& score, int& highScore) {
             int numClear = 0;
             for (int i = 0; i < PLAY_ROW; i++) {
                 bool clear = true;
@@ -147,6 +147,9 @@ class Board {
                 score += 12;
             } else if (numClear > 2) {
                 score += (10* numClear) + ((numClear - 1) * (2 + numClear) * 3 / 4);
+            }
+            if (score >= highScore) {
+                highScore = score;
             }
         }
 };
