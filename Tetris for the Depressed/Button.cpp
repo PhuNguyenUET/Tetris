@@ -14,14 +14,15 @@ class Button {
     private:
         SDL_Texture* buttonTexture;
         SDL_Point pos;
-        int width = 300;
-        int height = 130;
+        int width;
+        int height;
     public:
-        Button (SDL_Renderer* &renderer) {
-            string path = "Graphics/PlayButton2.png";
+        Button (SDL_Renderer* &renderer, string path, int width, int height) {;
             SDL_Surface* buttonSurface = IMG_Load(path.c_str());
             buttonTexture = SDL_CreateTextureFromSurface(renderer, buttonSurface);
             SDL_FreeSurface(buttonSurface);
+            this->width = width;
+            this->height = height;
         }
 
         void setPos (int x, int y) {

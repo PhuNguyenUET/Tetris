@@ -47,7 +47,7 @@ class Board {
             }
         }
 
-        void handleEvent (SDL_Event e, Shape* shape, vector <vector <int>>& board, bool& merge) {
+        void handleEvent (SDL_Event e, Shape* shape, vector <vector <int>>& board, bool& merge, double& systemVolume) {
             if (e.type == SDL_KEYDOWN) {
                 switch (e.key.keysym.sym) {
                     case SDLK_LEFT:
@@ -63,7 +63,7 @@ class Board {
                         shape -> rotateDown(board);
                         break;
                     case SDLK_SPACE:
-                        shape->hardDrop(board, merge);
+                        shape->hardDrop(board, merge, systemVolume);
                         break;
                 }
             }
@@ -109,7 +109,7 @@ class Board {
             return false;
         }
 
-        void clearLines(vector <vector<int>>& board, vector <bool>& rowState, int& lines, int& score, int& highScore) {
+        void clearLines(vector <vector<int>>& board, vector <bool>& rowState, int& lines, int& score, int& highScore, double& systemVolume) {
             int numClear = 0;
             for (int i = 0; i < PLAY_ROW; i++) {
                 bool clear = true;
@@ -151,6 +151,8 @@ class Board {
                     }
                 }
             }
+            Mix_VolumeChunk(clearLineSound, MIX_MAX_VOLUME * systemVolume);
+            Mix_VolumeChunk(clearMultipleSound, MIX_MAX_VOLUME * systemVolume);
             if (numClear == 1) {
                 score += 10;
                 Mix_PlayChannel(-1, clearLineSound, 0);

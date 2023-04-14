@@ -6,7 +6,6 @@
 #include <string>
 
 #include "Window.cpp"
-#include "Button.cpp"
 
 using std::string;
 using std::cout;
@@ -16,9 +15,11 @@ using std::to_string;
 class TitleScreen {
     private:
         SDL_Renderer* renderer;
-        Button* but;
+        Button* playBut;
+        Button* settingBut;
         LTexture* backGround;
         LTexture* introFont;
+        SettingScreen* settingScreen;
         Mix_Music *titleMusic = NULL;
 
 
@@ -61,41 +62,65 @@ class TitleScreen {
             SDL_Quit();
         }
 
-        TitleScreen (SDL_Window* &window, bool &quit) {
+        TitleScreen (SDL_Window* &window, bool &quit, double& systemVolume, double& musicVolume, int& songIdx) {
             init (window);
 
-            but = new Button(renderer);
+            playBut = new Button(renderer, "Graphics/PlayButton3.png", 333, 250);
+            settingBut = new Button(renderer, "Graphics/SettingsButton.png", 70, 70);
             backGround = new LTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
             introFont = new LTexture(450, 150);
 
             loadMedia();
 
-            but->setPos((SCREEN_WIDTH - 300) / 2, 250);
+            playBut->setPos((SCREEN_WIDTH - 333) / 2, 220);
+            settingBut->setPos(0, 0);
 
             bool change = false;
+            bool openSetting = false;
             SDL_Event e;
 
             Mix_PlayMusic(titleMusic, 0);
 
+            settingScreen = new SettingScreen(renderer, 110, 0, systemVolume, musicVolume, songIdx);
+
             while (!quit && !change) {
-                while (SDL_PollEvent(&e) != 0) {
-                    if (e.type == SDL_QUIT) {
-                        quit = true;
-                    } else {
-                        but->handleEvent(e, change);
-                    }
-                } 
+                if (!openSetting) {
+                    while (SDL_PollEvent(&e) != 0) {
+                        if (e.type == SDL_QUIT) {
+                            quit = true;
+                        } else {
+                            playBut->handleEvent(e, change);
+                            settingBut->handleEvent(e, openSetting);
+                        }
+                    } 
+                } else {
+                    while (SDL_PollEvent(&e) != 0) {
+                        if (e.type == SDL_QUIT) {
+                            quit = true;
+                            break;
+                        } else {
+                            settingScreen->handleEvent(renderer, e, openSetting, systemVolume, musicVolume, songIdx);
+                        }
+                    } 
+                }
+                Mix_VolumeMusic(MIX_MAX_VOLUME * musicVolume);
 
                 SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
                 SDL_RenderClear(renderer);
 
                 backGround->render(0, 0, renderer);
                 introFont->render((SCREEN_WIDTH - 450) / 2, 50, renderer);
-                but->render(renderer);
+                playBut->render(renderer);
+                settingBut->render(renderer);
+
+                if (openSetting) {
+                    settingScreen->render(renderer, songIdx);
+                }
 
                 SDL_RenderPresent(renderer);
             }
-            but->close();
+            playBut->close();
+            settingBut->close();
             if (quit) {
                 close();
                 kill(window);

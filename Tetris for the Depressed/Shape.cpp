@@ -177,7 +177,7 @@ class Shape {
             }
         }
 
-        void hardDrop (vector <vector <int>>& board, bool& merge) {
+        void hardDrop (vector <vector <int>>& board, bool& merge, double &systemVolume) {
             while (true) {
                 bool brk = false;
                 for (int i = 0; i < 4; i++) {
@@ -199,6 +199,7 @@ class Shape {
                 }
             }
             merge = true;
+            Mix_VolumeChunk(hardDropSound, MIX_MAX_VOLUME * systemVolume);
             Mix_PlayChannel(-1, hardDropSound, 0);
         }
 

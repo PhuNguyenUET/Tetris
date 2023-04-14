@@ -49,7 +49,7 @@ class Window {
             Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
         }
 
-        void loadMedia () {
+        void loadMedia (int songIdx) {
             bg = new LTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
             bg->loadFromFile("Graphics/Tetris_BackGround.png", renderer);
             endGame = new LTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -57,7 +57,20 @@ class Window {
             nxtBlock->loadMedia(renderer);
 
             endGameSound = Mix_LoadWAV("Audio/GameOver.wav");
-            themeSong = Mix_LoadMUS("Audio/TetrisSoundTrackWithLyrics.wav");
+            switch (songIdx) {
+                case 0:
+                    themeSong = Mix_LoadMUS("Audio/TetrisSoundTrackOriginal.wav");
+                    break;
+                case 1:
+                    themeSong = Mix_LoadMUS("Audio/TetrisSoundTrackWithLyrics.wav");
+                    break;
+                case 2:
+                    themeSong = Mix_LoadMUS("Audio/Dissipate.wav");
+                    break;
+                case 3:
+                    themeSong = Mix_LoadMUS("Audio/Natsukashii.wav");
+                    break;
+            }
         }
 
         void close () {
@@ -85,7 +98,7 @@ class Window {
         vector <vector <int>> board;
         vector <bool> rowState;
 
-        Window (SDL_Window* &window, bool& quit, bool& playNext) {
+        Window (SDL_Window* &window, bool& quit, bool& playNext, double& systemVolume, double& musicVolume, int& songIdx) {
             std::fstream file ("HighScore.txt");
             file >> highScore;
             file.seekg(0);
@@ -99,7 +112,7 @@ class Window {
             }
 
             init (window);
-            loadMedia();
+            loadMedia(songIdx);
 
             bool startCount = true;
             SDL_Event e;
@@ -123,6 +136,8 @@ class Window {
 
             nxtBlock->render(SCREEN_WIDTH - 350, 50, renderer, nextShapeArr, nxtColorIdx);
 
+            Mix_VolumeMusic(MIX_MAX_VOLUME * musicVolume);
+            Mix_VolumeChunk(endGameSound, MIX_MAX_VOLUME * systemVolume);
             Mix_PlayMusic(themeSong, -1);
 
             while (!quit && !end) {
@@ -132,7 +147,7 @@ class Window {
                     if (e.type == SDL_QUIT) {
                         quit = true;
                     } else {
-                        brd->handleEvent(e, shape, board, merge);
+                        brd->handleEvent(e, shape, board, merge, systemVolume);
                     }
                 }
 
@@ -185,7 +200,7 @@ class Window {
                 scoreBoard->render(SCREEN_WIDTH - 350, 300, renderer);
                 nxtBlock->render(SCREEN_WIDTH - 350, 50, renderer, nextShapeArr, nxtColorIdx);
 
-                brd->clearLines(board, rowState, lines, score, highScore);
+                brd->clearLines(board, rowState, lines, score, highScore, systemVolume);
                 brd->render(board, renderer);
 
                 brd->clearHover(board);
