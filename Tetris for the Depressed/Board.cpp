@@ -20,9 +20,19 @@ class Board {
         SDL_Point arr[4];
         SDL_Rect indTile[8];
 
+        Mix_Chunk* clearLineSound = NULL;
+        Mix_Chunk* clearMultipleSound = NULL;
+
     public:
         Board (SDL_Renderer* &renderer) {
             loadMedia(renderer);
+            clearLineSound = Mix_LoadWAV("Audio/ClearLines.wav");
+            clearMultipleSound = Mix_LoadWAV("Audio/ClearMultipleLines.wav");
+        }
+
+        ~Board () {
+            Mix_FreeChunk(clearLineSound);
+            clearLineSound = NULL;
         }
 
         void loadMedia (SDL_Renderer* &renderer) {
@@ -143,10 +153,13 @@ class Board {
             }
             if (numClear == 1) {
                 score += 10;
+                Mix_PlayChannel(-1, clearLineSound, 0);
             } else if (numClear == 2) {
                 score += 12;
+                Mix_PlayChannel(-1, clearMultipleSound, 0);
             } else if (numClear > 2) {
                 score += (10* numClear) + ((numClear - 1) * (2 + numClear) * 3 / 4);
+                Mix_PlayChannel(-1, clearMultipleSound, 0);
             }
             if (score >= highScore) {
                 highScore = score;

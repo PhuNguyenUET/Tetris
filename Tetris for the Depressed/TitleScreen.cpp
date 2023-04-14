@@ -19,6 +19,7 @@ class TitleScreen {
         Button* but;
         LTexture* backGround;
         LTexture* introFont;
+        Mix_Music *titleMusic = NULL;
 
 
     public:
@@ -32,17 +33,25 @@ class TitleScreen {
             SDL_SetRenderDrawColor (renderer, 0, 0, 0, 255);
             int imgFlag = IMG_INIT_PNG;
             IMG_Init(imgFlag);
+
+            Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
         }
 
         void loadMedia () {
             backGround->loadFromFile("Graphics/Starting_screen.png", renderer);
             introFont->loadFromFile("Graphics/Logo.png", renderer);
+
+            titleMusic = Mix_LoadMUS("Audio/TitleMusic.wav");
         }
 
         void close () {
             SDL_DestroyRenderer(renderer);
             renderer = NULL;
 
+            Mix_FreeMusic(titleMusic);
+            titleMusic = NULL;
+
+            Mix_Quit();
             IMG_Quit();
         }
 
@@ -65,6 +74,8 @@ class TitleScreen {
 
             bool change = false;
             SDL_Event e;
+
+            Mix_PlayMusic(titleMusic, 0);
 
             while (!quit && !change) {
                 while (SDL_PollEvent(&e) != 0) {

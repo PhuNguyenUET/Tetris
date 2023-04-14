@@ -19,9 +19,13 @@ class Window {
     private:
         SDL_Renderer* renderer;
         LTexture* bg = NULL;
+        LTexture* endGame = NULL;
         ScoreBoard* scoreBoard;
         EndGameNoti* endGameNoti;
         NextBlock* nxtBlock = new NextBlock();
+
+        Mix_Chunk *endGameSound = NULL;
+        Mix_Music *themeSong = NULL;
 
         vector <SDL_Point> nextShapeArr = vector <SDL_Point>(4);
         int nxtColorIdx;
@@ -41,18 +45,32 @@ class Window {
 
             int imgFlag = IMG_INIT_PNG;
             IMG_Init(imgFlag);
+
+            Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
         }
 
         void loadMedia () {
             bg = new LTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
             bg->loadFromFile("Graphics/Tetris_BackGround.png", renderer);
+            endGame = new LTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
+            endGame->loadFromFile("Graphics/EndGame.png", renderer);
             nxtBlock->loadMedia(renderer);
+
+            endGameSound = Mix_LoadWAV("Audio/GameOver.wav");
+            themeSong = Mix_LoadMUS("Audio/TetrisSoundTrackWithLyrics.wav");
         }
 
         void close () {
             SDL_DestroyRenderer(renderer);
             renderer = NULL;
 
+            Mix_FreeChunk(endGameSound);
+            endGameSound = NULL;
+
+            Mix_FreeMusic(themeSong);
+            themeSong = NULL;
+
+            Mix_Quit();
             IMG_Quit();
         }
 
@@ -104,6 +122,8 @@ class Window {
             scoreBoard->render(SCREEN_WIDTH - 350, 300, renderer);
 
             nxtBlock->render(SCREEN_WIDTH - 350, 50, renderer, nextShapeArr, nxtColorIdx);
+
+            Mix_PlayMusic(themeSong, -1);
 
             while (!quit && !end) {
                 int time = SDL_GetTicks();
@@ -168,14 +188,6 @@ class Window {
                 brd->clearLines(board, rowState, lines, score, highScore);
                 brd->render(board, renderer);
 
-                /*SDL_SetRenderDrawColor(renderer, 51, 153, 255, 255);
-                for (int i = 0; i <= 10; i ++) {
-                    SDL_RenderDrawLine(renderer, 490 + 22*i, 47, 490 + 22*i, 47 + 22 * 20);
-                }
-                for (int j = 0; j <= 20; j++) {
-                    SDL_RenderDrawLine(renderer, 490, 47 + j * 22, 490 + 22*10, 47 + j * 22);
-                }*/
-
                 brd->clearHover(board);
 
                 SDL_RenderPresent(renderer);
@@ -183,12 +195,16 @@ class Window {
             if (score >= highScore) {
                 file << score;
             }
+            Mix_PlayChannel(-1, endGameSound, 0);
+            Mix_HaltMusic();
             file.close();
             if (quit) {
                 close ();
                 kill(window);
             } else {
                 endGameNoti = new EndGameNoti(renderer);
+
+                endGameNoti->loadScore(score, highScore, renderer);
 
                 while (!quit && !playNext) {
                     while (SDL_PollEvent(&e)) {
@@ -201,13 +217,7 @@ class Window {
 
                     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
                     SDL_RenderClear(renderer);
-                    bg->render(0, 0, renderer);
-                    playArea->render(490, 47, renderer);
-
-                    brd->render(board, renderer);
-
-                    scoreBoard->render(SCREEN_WIDTH - 350, 300, renderer);
-                    nxtBlock->render(SCREEN_WIDTH - 350, 50, renderer, nextShapeArr, nxtColorIdx);
+                    endGame->render(0, 0, renderer);
 
                     endGameNoti->render((SCREEN_WIDTH - 300) / 2, 150, renderer);
 

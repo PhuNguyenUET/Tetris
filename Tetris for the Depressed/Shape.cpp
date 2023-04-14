@@ -34,6 +34,8 @@ class Shape {
 
         int colorIdx;
 
+        Mix_Chunk* hardDropSound = NULL;
+
     public:
         SDL_Point shapeArr[4];
 
@@ -197,6 +199,7 @@ class Shape {
                 }
             }
             merge = true;
+            Mix_PlayChannel(-1, hardDropSound, 0);
         }
 
         void hover (vector <vector <int>>& board, bool& merge) {
@@ -232,6 +235,10 @@ class Shape {
             }
         }
 
+        void loadMedia () {
+            hardDropSound = Mix_LoadWAV("Audio/HardDrop.wav");
+        }
+
         int getColorIdx () {
             return colorIdx;
         }
@@ -257,6 +264,7 @@ class Shape {
                 prevShapeArr[i].x = shapeArr[i].x;
                 prevShapeArr[i].y = shapeArr[i].y;
             }
+            loadMedia();
         }
 
         Shape (vector <vector<int>>& board, bool& end, vector <SDL_Point> &nextShapeArr, int& nxtColorIdx) {
@@ -272,5 +280,11 @@ class Shape {
                     end = true;
                 }
             }
+            loadMedia();
+        }
+
+        ~Shape() {
+            Mix_FreeChunk(hardDropSound);
+            hardDropSound = NULL;
         }
 };
