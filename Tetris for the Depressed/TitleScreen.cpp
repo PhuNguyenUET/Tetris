@@ -24,11 +24,13 @@ class TitleScreen {
 
 
     public:
-        void init (SDL_Window* &window) {
-            SDL_Init (SDL_INIT_EVERYTHING);
-            SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
+        void init (SDL_Window* &window, bool firstTime) {
+            if (firstTime) {
+                SDL_Init (SDL_INIT_EVERYTHING);
+                SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
-            window = SDL_CreateWindow("Tetris for the Depressed", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+                window = SDL_CreateWindow("Tetris for the Depressed", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+            }
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
             SDL_SetRenderDrawColor (renderer, 0, 0, 0, 255);
@@ -62,8 +64,8 @@ class TitleScreen {
             SDL_Quit();
         }
 
-        TitleScreen (SDL_Window* &window, bool &quit, double& systemVolume, double& musicVolume, int& songIdx) {
-            init (window);
+        TitleScreen (SDL_Window* &window, bool &quit, bool firstTime, double& systemVolume, double& musicVolume, int& songIdx) {
+            init (window, firstTime);
 
             playBut = new Button(renderer, "Graphics/PlayButton3.png", 333, 250);
             settingBut = new Button(renderer, "Graphics/SettingsButton.png", 70, 70);

@@ -20,6 +20,7 @@ class Window {
         SDL_Renderer* renderer;
         LTexture* bg = NULL;
         LTexture* endGame = NULL;
+        LTexture* tutorial = NULL;
         ScoreBoard* scoreBoard;
         EndGameNoti* endGameNoti;
         NextBlock* nxtBlock = new NextBlock();
@@ -28,6 +29,7 @@ class Window {
         Mix_Music *themeSong = NULL;
 
         vector <SDL_Point> nextShapeArr = vector <SDL_Point>(4);
+        vector <int> shapeRotation = {1, 1, 1, 1, 1, 1, 1};
         int nxtColorIdx;
         int highScore;
         Shape* shape;
@@ -52,6 +54,8 @@ class Window {
         void loadMedia (int songIdx) {
             bg = new LTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
             bg->loadFromFile("Graphics/Tetris_BackGround.png", renderer);
+            tutorial = new LTexture(244, 400);
+            tutorial->loadFromFile("Graphics/Tutorial.png", renderer);
             endGame = new LTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
             endGame->loadFromFile("Graphics/EndGame.png", renderer);
             nxtBlock->loadMedia(renderer);
@@ -69,6 +73,9 @@ class Window {
                     break;
                 case 3:
                     themeSong = Mix_LoadMUS("Audio/Natsukashii.wav");
+                    break;
+                case 4:
+                    themeSong = Mix_LoadMUS("Audio/WillPower.wav");
                     break;
             }
         }
@@ -98,7 +105,7 @@ class Window {
         vector <vector <int>> board;
         vector <bool> rowState;
 
-        Window (SDL_Window* &window, bool& quit, bool& playNext, double& systemVolume, double& musicVolume, int& songIdx) {
+        Window (SDL_Window* &window, bool& quit, bool& playNext, double& systemVolume, double& musicVolume, int& songIdx, bool& turnBack) {
             std::fstream file ("HighScore.txt");
             file >> highScore;
             file.seekg(0);
@@ -123,8 +130,8 @@ class Window {
             int prevScore = score;
             int prevLockTime = 0;
 
-            shape = new Shape();
-            shape->generateNextBlock(nextShapeArr, nxtColorIdx);
+            shape = new Shape(shapeRotation);
+            shape->generateNextBlock(nextShapeArr, shapeRotation, nxtColorIdx);
             brd = new Board(renderer);
             scoreBoard = new ScoreBoard(170, 50 , 110, 50, renderer);
             
@@ -135,6 +142,7 @@ class Window {
             scoreBoard->render(SCREEN_WIDTH - 350, 300, renderer);
 
             nxtBlock->render(SCREEN_WIDTH - 350, 50, renderer, nextShapeArr, nxtColorIdx);
+            tutorial->render(120, 70, renderer);
 
             Mix_VolumeMusic(MIX_MAX_VOLUME * musicVolume);
             Mix_VolumeChunk(endGameSound, MIX_MAX_VOLUME * systemVolume);
@@ -172,14 +180,14 @@ class Window {
                     shape->updateBoard(board);
                     shape->merge(board);
                     shape = new Shape(board, end, nextShapeArr, nxtColorIdx);
-                    shape->generateNextBlock(nextShapeArr, nxtColorIdx);
+                    shape->generateNextBlock(nextShapeArr, shapeRotation, nxtColorIdx);
                 } else if (shape->checkMerge(board)) {
                     startCount = false;
                     if (time - prevLockTime >= 500) {
                         shape->updateBoard(board);
                         shape->merge(board);
                         shape = new Shape(board, end, nextShapeArr, nxtColorIdx);
-                        shape->generateNextBlock(nextShapeArr, nxtColorIdx);
+                        shape->generateNextBlock(nextShapeArr, shapeRotation, nxtColorIdx);
                         startCount = true;
                     }
                 }
@@ -199,6 +207,8 @@ class Window {
 
                 scoreBoard->render(SCREEN_WIDTH - 350, 300, renderer);
                 nxtBlock->render(SCREEN_WIDTH - 350, 50, renderer, nextShapeArr, nxtColorIdx);
+
+                tutorial->render(120, 70, renderer);
 
                 brd->clearLines(board, rowState, lines, score, highScore, systemVolume);
                 brd->render(board, renderer);
@@ -221,12 +231,12 @@ class Window {
 
                 endGameNoti->loadScore(score, highScore, renderer);
 
-                while (!quit && !playNext) {
+                while (!quit && !playNext && !turnBack) {
                     while (SDL_PollEvent(&e)) {
                         if (e.type == SDL_QUIT) {
                             quit = true;
                         } else {
-                            endGameNoti->handleEvent(e, playNext);
+                            endGameNoti->handleEvent(e, playNext, turnBack);
                         }
                     }
 

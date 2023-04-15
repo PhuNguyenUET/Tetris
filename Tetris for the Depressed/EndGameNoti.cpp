@@ -15,13 +15,12 @@ using std::to_string;
 class EndGameNoti {
     private:
         LTexture* endGame = NULL;   
-        SDL_Texture* noti = NULL;
         SDL_Texture* scoreNoti = NULL;
         TTF_Font* font = NULL;
 
-        int notiWidth = 400;
-        int notiHeight = 70;
-
+        Button* returnButton = NULL;
+        Button* continueButton = NULL;
+        
         int scoreWidth = 250;
         int scoreHeight = 70;
 
@@ -37,27 +36,18 @@ class EndGameNoti {
 
             endGame->loadFromFile("Graphics/GameOver.png", renderer);
 
-            this->loadFromRenderedText(renderer);
+            returnButton = new Button(renderer, "Graphics/ReturnButton.png", 200, 75);
+            returnButton->setPos((SCREEN_WIDTH - 200) / 2, 450);
+
+            continueButton = new Button(renderer, "Graphics/ContinueButton.png", 225, 75);
+            continueButton->setPos((SCREEN_WIDTH - 225) / 2, 350);
         }
 
         void free () {
-            if (noti != NULL) {
-                SDL_DestroyTexture(noti);
-                noti = NULL;
+            if (scoreNoti != NULL) {
+                SDL_DestroyTexture(scoreNoti);
+                scoreNoti = NULL;
             }
-        }
-
-        void loadFromRenderedText (SDL_Renderer* &renderer) {
-            free();
-
-            string text = "Press any key to continue";
-
-            SDL_Color textColor = {255, 255, 255, 255};
-            SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), textColor);
-
-            noti = SDL_CreateTextureFromSurface(renderer, textSurface);
-
-            SDL_FreeSurface(textSurface);
         }
 
         void loadScore (int score, int highScore, SDL_Renderer* &renderer) {
@@ -92,15 +82,14 @@ class EndGameNoti {
             endGame->render(x, y, renderer);
             SDL_Rect scoreRenderQuad = {x + endGame->getWidth() / 2 - scoreWidth / 2, y + 110, scoreWidth, scoreHeight};
             SDL_RenderCopy(renderer, scoreNoti, NULL, &scoreRenderQuad);
-            SDL_Rect renderQuad = {x + endGame->getWidth() / 2 - notiWidth / 2, y + 170, notiWidth, notiHeight};
-            SDL_RenderCopy(renderer, noti, NULL, &renderQuad);
+            returnButton->render(renderer);
+            continueButton->render(renderer);
         } 
         
-        void handleEvent (SDL_Event& e, bool &playNext) {
-            if (e.type == SDL_KEYDOWN) {
-                if (playNext == false) {
-                    playNext = true;
-                }
+        void handleEvent (SDL_Event& e, bool &playNext, bool& turnBack) {
+            if (e.type == SDL_MOUSEBUTTONDOWN) {
+                returnButton->handleEvent(e, turnBack);
+                continueButton->handleEvent(e, playNext);
             }
         }
         int getWidth () {

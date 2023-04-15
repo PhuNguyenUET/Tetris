@@ -244,9 +244,25 @@ class Shape {
             return colorIdx;
         }
 
-        void generateNextBlock (vector <SDL_Point> &nextShapeArr, int& nxtColorIdx) {
-            int shapeIdx = rand() % 7;
+        void generateNextBlock (vector <SDL_Point> &nextShapeArr, vector<int> &shapeRotation, int& nxtColorIdx) {
+            int shapeIdx;
+            bool check = true;
+            for (int i = 0; i < 7; i++) {
+                if (shapeRotation[i] == 1) {
+                    check = false;
+                }
+            }
+            if (check) {
+                for (int i = 0; i < 7; i ++) {
+                    shapeRotation[i] = 1;
+                }
+            }
+            do {
+                shapeIdx = rand() % 7;
+            } while (shapeRotation[shapeIdx] == 0);
             nxtColorIdx = rand() % 7 + 1;
+
+            shapeRotation[shapeIdx] = 0;
 
             for (int i = 0; i < 4; i++) {
                 nextShapeArr[i].x = shapes[shapeIdx][i] % 2 + 4;
@@ -254,9 +270,11 @@ class Shape {
             }
         }
 
-        Shape () {
+        Shape (vector<int> &shapeRotation) {
             int shapeIdx = rand() % 7;
             colorIdx = rand() % 7 + 1;
+
+            shapeRotation[shapeIdx] = 0;
 
             for (int i = 0; i < 4; i++) {
                 shapeArr[i].x = shapes[shapeIdx][i] % 2 + 4;

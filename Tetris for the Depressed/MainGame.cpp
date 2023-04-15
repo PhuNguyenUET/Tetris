@@ -13,14 +13,19 @@ int main (int argc, char* args[]) {
 
     bool quit = false;
     bool playNext = false;
+    bool turnBack = false;
 
-    double systemVolume = 1;
-    double musicVolume = 1;
+    double systemVolume = 0.5;
+    double musicVolume = 0.5;
     int songIdx = 0;
 
-    new TitleScreen(window, quit, systemVolume, musicVolume, songIdx);
+    new TitleScreen(window, quit, true, systemVolume, musicVolume, songIdx);
     do {
+        if (turnBack) {
+            new TitleScreen(window, quit, false, systemVolume, musicVolume, songIdx);
+            turnBack = false;
+        }
         playNext = false;
-        new Window(window, quit, playNext, systemVolume, musicVolume, songIdx);
-    } while (!quit && playNext);
+        new Window(window, quit, playNext, systemVolume, musicVolume, songIdx, turnBack);
+    } while (!quit && (playNext || turnBack));
 }

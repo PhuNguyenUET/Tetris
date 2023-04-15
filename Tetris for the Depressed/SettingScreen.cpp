@@ -10,7 +10,7 @@ using std::vector;
 
 class SettingScreen {
     private:
-        vector <string> songsList = {"Classic Theme Song", "Hold on Tight", "Dissipate", "Natsukashii"};
+        vector <string> songsList = {"Classic Theme Song", "Hold on Tight", "Dissipate", "Natsukashii", "WillPower"};
         const int UIwidth = 960;
         const int UIheight = 600;
 
@@ -88,7 +88,7 @@ class SettingScreen {
                 systemBar->handleEvent(e, systemVolume);
                 changeButton->handleEvent(e, changeMusic);
                 if (changeMusic) {
-                    currentMusic = (currentMusic + 1) % 4;
+                    currentMusic = (currentMusic + 1) % 5;
                     changeMusic = false;
                     loadFromRenderedText(songName, songsList[currentMusic], renderer);
                 }
@@ -112,6 +112,9 @@ class SettingScreen {
                     break;
                 case 3: 
                     songNameRect = {x + 400, y + 290, 180, 50};
+                    break;
+                case 4: 
+                    songNameRect = {x + 400, y + 290, 160, 50};
                     break;
             }
             SettingsWindow->render(x, y, renderer);
