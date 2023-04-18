@@ -15,7 +15,6 @@ using std::vector;
 
 class Board {
     private:
-
         LTexture* tiles;
         SDL_Point arr[4];
         SDL_Rect indTile[8];
