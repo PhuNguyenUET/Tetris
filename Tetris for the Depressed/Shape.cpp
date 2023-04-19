@@ -30,7 +30,6 @@
             }
             SDL_Point center = shapeArr[1];
             int orgiX = shapeArr[0].x;
-            int orgiY = shapeArr[0].y;
             shapeArr[0].x = center.x + (shapeArr[0].y - center.y);
             shapeArr[0].y = center.y - (orgiX - center.x);
             for (int i = 2; i < 4; i++) {
@@ -49,7 +48,6 @@
             }
             SDL_Point center = shapeArr[1];
             int orgiX = shapeArr[0].x;
-            int orgiY = shapeArr[0].y;
             shapeArr[0].x = center.x - (shapeArr[0].y - center.y);
             shapeArr[0].y = center.y + (orgiX - center.x);
             for (int i = 2; i < 4; i++) {

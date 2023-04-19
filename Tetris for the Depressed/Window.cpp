@@ -87,7 +87,6 @@
             int prevTime = 0;
             int lines = 0;
             int score = 0;
-            int prevLines = lines;
             int prevScore = score;
             int prevLockTime = 0;
 
@@ -123,7 +122,6 @@
                 if (score != prevScore) {
                     scoreBoard->loadFromRenderedText("Your score: " + to_string(score), "Lines: " + to_string(lines),"High score: " + to_string(highScore), renderer);
                     prevScore = score;
-                    prevLines = lines;
                 }
 
                 if (time - prevTime >= 700) {

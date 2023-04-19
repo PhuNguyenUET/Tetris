@@ -5,7 +5,8 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
-#include "TitleScreen.cpp"
+#include "Window.h"
+#include "TitleScreen.h"
 
 int main (int argc, char* args[]) {
     srand (time(0));

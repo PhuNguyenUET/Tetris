@@ -48,7 +48,7 @@
         }
     }
 
-    void LTexture::render (int x, int y, SDL_Renderer* &renderer, SDL_Rect* clip = NULL, double angle = 0.0, SDL_Point* center = NULL) {
+    void LTexture::render (int x, int y, SDL_Renderer* &renderer, SDL_Rect* clip, double angle, SDL_Point* center) {
         SDL_Rect renderQuad = {x, y, mWidth, mHeight};
         SDL_RendererFlip flip = SDL_FLIP_NONE;
         if (clip != NULL) {
