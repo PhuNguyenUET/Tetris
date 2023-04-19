@@ -8,6 +8,10 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
 
+#include "LTexture.h"
+#include "ProgressBar.h"
+#include "Button.h"
+
 using std::vector;
 using std::string;
 

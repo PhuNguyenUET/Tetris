@@ -1,30 +1,8 @@
 #include <iostream>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_ttf.h>
-#include <string>
 
-#include "Window.cpp"
+#include "TItleScreen.h"
 
-using std::string;
-using std::cout;
-using std::endl;
-using std::to_string;
-
-class TitleScreen {
-    private:
-        SDL_Renderer* renderer;
-        Button* playBut;
-        Button* settingBut;
-        LTexture* backGround;
-        LTexture* introFont;
-        SettingScreen* settingScreen;
-        Mix_Music *titleMusic = NULL;
-
-
-    public:
-        void init (SDL_Window* &window, bool firstTime) {
+        void TitleScreen::init (SDL_Window* &window, bool firstTime) {
             if (firstTime) {
                 SDL_Init (SDL_INIT_EVERYTHING);
                 SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
@@ -40,14 +18,14 @@ class TitleScreen {
             Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
         }
 
-        void loadMedia () {
+        void TitleScreen::loadMedia () {
             backGround->loadFromFile("Graphics/Starting_screen.png", renderer);
             introFont->loadFromFile("Graphics/Logo.png", renderer);
 
             titleMusic = Mix_LoadMUS("Audio/TitleMusic.wav");
         }
 
-        void close () {
+        void TitleScreen::close () {
             SDL_DestroyRenderer(renderer);
             renderer = NULL;
 
@@ -58,13 +36,13 @@ class TitleScreen {
             IMG_Quit();
         }
 
-        void kill (SDL_Window* &window) {
+        void TitleScreen::kill (SDL_Window* &window) {
             SDL_DestroyWindow(window);
             window = NULL;
             SDL_Quit();
         }
 
-        TitleScreen (SDL_Window* &window, bool &quit, bool firstTime, double& systemVolume, double& musicVolume, int& songIdx) {
+        TitleScreen::TitleScreen (SDL_Window* &window, bool &quit, bool firstTime, double& systemVolume, double& musicVolume, int& songIdx) {
             init (window, firstTime);
 
             playBut = new Button(renderer, "Graphics/PlayButton3.png", 333, 250);
@@ -130,4 +108,3 @@ class TitleScreen {
                 close();
             }
         }
-};

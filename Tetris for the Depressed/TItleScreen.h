@@ -8,6 +8,10 @@
 #include <SDL2/SDL_ttf.h>
 #include <string>
 
+#include "Button.h"
+#include "LTexture.h"
+#include "SettingScreen.h"
+
 using std::string;
 using std::cout;
 using std::endl;

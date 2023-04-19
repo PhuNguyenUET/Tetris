@@ -1,31 +1,8 @@
 #include <iostream>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_ttf.h>
-#include <string>
 
-#include "ScoreBoard.cpp"
+#include "EndGameNoti.h"
 
-using std::string;
-using std::cout;
-using std::endl;
-using std::to_string;
-
-class EndGameNoti {
-    private:
-        LTexture* endGame = NULL;   
-        SDL_Texture* scoreNoti = NULL;
-        TTF_Font* font = NULL;
-
-        Button* returnButton = NULL;
-        Button* continueButton = NULL;
-        
-        int scoreWidth = 250;
-        int scoreHeight = 70;
-
-    public:
-        EndGameNoti (SDL_Renderer* &renderer) {
+        EndGameNoti::EndGameNoti (SDL_Renderer* &renderer) {
             TTF_Init();
             font = TTF_OpenFont("Font/Font.ttf", 30);
 
@@ -43,14 +20,14 @@ class EndGameNoti {
             continueButton->setPos((SCREEN_WIDTH - 225) / 2, 350);
         }
 
-        void free () {
+        void EndGameNoti::free () {
             if (scoreNoti != NULL) {
                 SDL_DestroyTexture(scoreNoti);
                 scoreNoti = NULL;
             }
         }
 
-        void loadScore (int score, int highScore, SDL_Renderer* &renderer) {
+        void EndGameNoti::loadScore (int score, int highScore, SDL_Renderer* &renderer) {
             if (scoreNoti != NULL) {
                 SDL_DestroyTexture(scoreNoti);
                 scoreNoti = NULL;
@@ -71,14 +48,14 @@ class EndGameNoti {
             SDL_FreeSurface(textSurface);
         }
 
-        void close () {
+        void EndGameNoti::close () {
             free(); 
             
             TTF_CloseFont(font);
             font = NULL;
         }
 
-        void render (int x, int y, SDL_Renderer* &renderer) {
+        void EndGameNoti::render (int x, int y, SDL_Renderer* &renderer) {
             endGame->render(x, y, renderer);
             SDL_Rect scoreRenderQuad = {x + endGame->getWidth() / 2 - scoreWidth / 2, y + 110, scoreWidth, scoreHeight};
             SDL_RenderCopy(renderer, scoreNoti, NULL, &scoreRenderQuad);
@@ -86,16 +63,15 @@ class EndGameNoti {
             continueButton->render(renderer);
         } 
         
-        void handleEvent (SDL_Event& e, bool &playNext, bool& turnBack) {
+        void EndGameNoti::handleEvent (SDL_Event& e, bool &playNext, bool& turnBack) {
             if (e.type == SDL_MOUSEBUTTONDOWN) {
                 returnButton->handleEvent(e, turnBack);
                 continueButton->handleEvent(e, playNext);
             }
         }
-        int getWidth () {
+        int EndGameNoti::getWidth () {
             return endGame->getWidth();
         }
-        int getHeight () {
+        int EndGameNoti::getHeight () {
             return endGame->getHeight();
         }
-};

@@ -1,40 +1,18 @@
 #include <iostream>
-#include <vector>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+#include "Board.h"
 
-#include "Shape.cpp"
-
-using std::string;
-using std::cout;
-using std::endl;
-using std::to_string;
-using std::vector;
-
-class Board {
-    private:
-        LTexture* tiles;
-        SDL_Point arr[4];
-        SDL_Rect indTile[8];
-
-        Mix_Chunk* clearLineSound = NULL;
-        Mix_Chunk* clearMultipleSound = NULL;
-
-    public:
-        Board (SDL_Renderer* &renderer) {
+        Board::Board (SDL_Renderer* &renderer) {
             loadMedia(renderer);
             clearLineSound = Mix_LoadWAV("Audio/ClearLines.wav");
             clearMultipleSound = Mix_LoadWAV("Audio/ClearMultipleLines.wav");
         }
 
-        ~Board () {
+        Board::~Board () {
             Mix_FreeChunk(clearLineSound);
             clearLineSound = NULL;
         }
 
-        void loadMedia (SDL_Renderer* &renderer) {
+        void Board::loadMedia (SDL_Renderer* &renderer) {
             tiles = new LTexture(22 * 8, 22);
             tiles->loadFromFile("Graphics/tiles.png", renderer);
 
@@ -46,7 +24,7 @@ class Board {
             }
         }
 
-        void handleEvent (SDL_Event e, Shape* shape, vector <vector <int>>& board, bool& merge, double& systemVolume) {
+        void Board::handleEvent (SDL_Event e, Shape* shape, vector <vector <int>>& board, bool& merge, double& systemVolume) {
             if (e.type == SDL_KEYDOWN) {
                 switch (e.key.keysym.sym) {
                     case SDLK_LEFT:
@@ -68,7 +46,7 @@ class Board {
             }
         }
 
-        void render (vector <vector <int>>& board, SDL_Renderer* renderer) {
+        void Board::render (vector <vector <int>>& board, SDL_Renderer* renderer) {
             for (int i = 0; i < PLAY_ROW; i++) {
                 for (int j = 0; j < PLAY_COL; j++) {
                     if (board[i][j] != 0) {
@@ -89,7 +67,7 @@ class Board {
             }
         }
 
-        void clearHover (vector <vector <int>>& board) {
+        void Board::clearHover (vector <vector <int>>& board) {
             for (int i = 0; i < 20; i++) {
                 for (int j = 0; j < 10; j++) {
                     if (board[i][j] == -1) {
@@ -99,7 +77,7 @@ class Board {
             }
         }
 
-        bool isGameOver (vector <vector <int>> & board) {
+        bool Board::isGameOver (vector <vector <int>> & board) {
             for (int i = 0; i < PLAY_COL; i++) {
                 if (board[0][i] >= 10) {
                     return true;
@@ -108,7 +86,7 @@ class Board {
             return false;
         }
 
-        void clearLines(vector <vector<int>>& board, vector <bool>& rowState, int& lines, int& score, int& highScore, double& systemVolume) {
+        void Board::clearLines(vector <vector<int>>& board, vector <bool>& rowState, int& lines, int& score, int& highScore, double& systemVolume) {
             int numClear = 0;
             for (int i = 0; i < PLAY_ROW; i++) {
                 bool clear = true;
@@ -166,4 +144,3 @@ class Board {
                 highScore = score;
             }
         }
-};

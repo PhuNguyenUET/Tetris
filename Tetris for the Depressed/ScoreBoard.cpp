@@ -1,32 +1,8 @@
 #include <iostream>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_ttf.h>
-#include <string>
-#include "NextBlock.cpp"
 
-using std::string;
-using std::cout;
-using std::endl;
-using std::to_string;
+#include "ScoreBoard.h"
 
-class ScoreBoard {
-    private:
-        const int neonEdge = 230;
-        LTexture* neonBoard;
-        SDL_Texture* scoreTexture = NULL;
-        SDL_Texture* lineTexture = NULL;
-        SDL_Texture* highTexture = NULL;
-        TTF_Font* font = NULL;
-
-        int scoreWidth;
-        int scoreHeight;
-        int lineWidth;
-        int lineHeight;
-
-    public:
-        ScoreBoard (int scoreWidth, int scoreHeight, int lineWidth, int lineHeight, SDL_Renderer* &renderer) {
+        ScoreBoard::ScoreBoard (int scoreWidth, int scoreHeight, int lineWidth, int lineHeight, SDL_Renderer* &renderer) {
             int imgFlag = IMG_INIT_PNG;
             IMG_Init(imgFlag);
             TTF_Init();
@@ -39,14 +15,14 @@ class ScoreBoard {
             this->lineHeight = lineHeight;
         }
 
-        void free () {
+        void ScoreBoard::free () {
             if (scoreTexture != NULL) {
                 SDL_DestroyTexture(scoreTexture);
                 scoreTexture = NULL;
             }
         }
 
-        void loadFromRenderedText (string scoreText, string lineText, string highText, SDL_Renderer* &renderer) {
+        void ScoreBoard::loadFromRenderedText (string scoreText, string lineText, string highText, SDL_Renderer* &renderer) {
             free ();
 
             SDL_Color color = {51, 51, 255, 255};
@@ -69,14 +45,14 @@ class ScoreBoard {
             SDL_FreeSurface(highSurface);
         }
 
-        void close () {
+        void ScoreBoard::close () {
             free();
             TTF_CloseFont(font);
             IMG_Quit();
             font = NULL; 
         }
 
-        void render (int x, int y, SDL_Renderer* &renderer) {
+        void ScoreBoard::render (int x, int y, SDL_Renderer* &renderer) {
             neonBoard->render(x, y, renderer);
             SDL_Rect scoreQuad = {x + (neonEdge - scoreWidth)/2, y + lineHeight + 35, scoreWidth, scoreHeight};
             SDL_RenderCopy(renderer, scoreTexture, NULL, &scoreQuad);
@@ -85,4 +61,3 @@ class ScoreBoard {
             SDL_Rect highQuad = {x + (neonEdge - scoreWidth)/2, y + lineHeight + scoreHeight + 35, scoreWidth, scoreHeight};
             SDL_RenderCopy(renderer, highTexture, NULL, &highQuad);
         }
-};

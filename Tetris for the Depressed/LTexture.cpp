@@ -1,43 +1,24 @@
 #include <iostream>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_ttf.h>
-#include <string>
 
-using std::string;
-using std::cout;
-using std::endl;
-using std::to_string;
+#include "LTexture.h"
 
-const int SCREEN_WIDTH = 1200;
-const int SCREEN_HEIGHT = 615;
-
-const int PLAY_COL = 10;
-const int PLAY_ROW = 20;
-
-class LTexture {
-    public:
-    int orgiWidth;
-    int orgiHeight;
-
-    LTexture(int width, int height) {
+    LTexture::LTexture(int width, int height) {
         mTexture = NULL;
         mWidth = width;
         mHeight = height;
     }
 
-    LTexture () {
+    LTexture::LTexture () {
         mTexture = NULL;
         mWidth = 0;
         mHeight = 0;
     }
 
-    ~LTexture() {
+    LTexture::~LTexture() {
         free();
     }
 
-    void loadFromFile (string path, SDL_Renderer* &renderer) {
+    void LTexture::loadFromFile (string path, SDL_Renderer* &renderer) {
         free ();
 
         SDL_Texture* newTexture = NULL;
@@ -60,14 +41,14 @@ class LTexture {
         mTexture = newTexture;
     }
 
-    void free () {
+    void LTexture::free () {
         if (mTexture != NULL) {
             SDL_DestroyTexture(mTexture);
             mTexture = NULL;
         }
     }
 
-    void render (int x, int y, SDL_Renderer* &renderer, SDL_Rect* clip = NULL, double angle = 0.0, SDL_Point* center = NULL) {
+    void LTexture::render (int x, int y, SDL_Renderer* &renderer, SDL_Rect* clip = NULL, double angle = 0.0, SDL_Point* center = NULL) {
         SDL_Rect renderQuad = {x, y, mWidth, mHeight};
         SDL_RendererFlip flip = SDL_FLIP_NONE;
         if (clip != NULL) {
@@ -77,21 +58,14 @@ class LTexture {
         SDL_RenderCopyEx(renderer, mTexture, clip, &renderQuad, angle, center, flip);
     }
 
-    int getWidth () {
+    int LTexture::getWidth () {
         return mWidth;
     }
 
-    int getHeight () {
+    int LTexture::getHeight () {
         return mHeight;
     }
 
-    SDL_Texture* getTexture () {
+    SDL_Texture* LTexture::getTexture () {
         return mTexture;
     }
-
-    private:
-    SDL_Texture* mTexture;
-
-    int mWidth;
-    int mHeight;
-};

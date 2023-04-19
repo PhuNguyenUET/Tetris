@@ -1,24 +1,8 @@
 #include <iostream>
-#include <vector>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
-#include "SettingScreen.cpp"
 
-using std::vector;
+#include "NextBlock.h"
 
-class NextBlock {
-private:
-    const int neonEdge = 230;
-
-public:
-    LTexture *neon = new LTexture(neonEdge, neonEdge);
-    int nextShape[4][2];
-    LTexture* tiles;
-    SDL_Rect indTile[8];
-    
-    void loadMedia (SDL_Renderer* renderer) {
+    void NextBlock::loadMedia (SDL_Renderer* renderer) {
         neon->loadFromFile("Graphics/Neon_square.png", renderer);
         tiles = new LTexture(22 * 8, 22);
         tiles->loadFromFile("Graphics/tiles.png", renderer);
@@ -31,7 +15,7 @@ public:
         }
     }
 
-    void render (int x, int y, SDL_Renderer* renderer, vector <SDL_Point> nextShapeArr, int nxtColorIdx) {
+    void NextBlock::render (int x, int y, SDL_Renderer* renderer, vector <SDL_Point> nextShapeArr, int nxtColorIdx) {
         for (int i = 0; i < 4; i++) {
             nextShape[nextShapeArr[i].y][nextShapeArr[i].x - 4] = nxtColorIdx;
         }
@@ -49,4 +33,3 @@ public:
             }
         }
     }
-};

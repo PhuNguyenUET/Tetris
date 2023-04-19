@@ -1,43 +1,8 @@
 #include <iostream>
-#include <vector>
-#include <fstream>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
 
-#include "Board.cpp"
+#include "Window.h"
 
-using std::string;
-using std::cout;
-using std::endl;
-using std::to_string;
-using std::vector;
-
-
-class Window {
-    private:
-        SDL_Renderer* renderer;
-        LTexture* bg = NULL;
-        LTexture* endGame = NULL;
-        LTexture* tutorial = NULL;
-        ScoreBoard* scoreBoard;
-        EndGameNoti* endGameNoti;
-        NextBlock* nxtBlock = new NextBlock();
-
-        Mix_Chunk *endGameSound = NULL;
-        Mix_Music *themeSong = NULL;
-
-        vector <SDL_Point> nextShapeArr = vector <SDL_Point>(4);
-        vector <int> shapeRotation = {1, 1, 1, 1, 1, 1, 1};
-        int nxtColorIdx;
-        int highScore;
-        Shape* shape;
-        Board* brd;
-
-        bool end = false;
-
-        void init (SDL_Window* &window) {
+        void Window::init (SDL_Window* &window) {
             SDL_Init(SDL_INIT_EVERYTHING);
             SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
@@ -51,7 +16,7 @@ class Window {
             Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
         }
 
-        void loadMedia (int songIdx) {
+        void Window::loadMedia (int songIdx) {
             bg = new LTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
             bg->loadFromFile("Graphics/Tetris_BackGround.png", renderer);
             tutorial = new LTexture(244, 400);
@@ -80,7 +45,7 @@ class Window {
             }
         }
 
-        void close () {
+        void Window::close () {
             SDL_DestroyRenderer(renderer);
             renderer = NULL;
 
@@ -94,18 +59,14 @@ class Window {
             IMG_Quit();
         }
 
-        void kill (SDL_Window* &window) {
+        void Window::kill (SDL_Window* &window) {
             SDL_DestroyWindow(window);
             window = NULL;
 
             SDL_Quit();
         }
 
-    public:
-        vector <vector <int>> board;
-        vector <bool> rowState;
-
-        Window (SDL_Window* &window, bool& quit, bool& playNext, double& systemVolume, double& musicVolume, int& songIdx, bool& turnBack) {
+        Window::Window (SDL_Window* &window, bool& quit, bool& playNext, double& systemVolume, double& musicVolume, int& songIdx, bool& turnBack) {
             std::fstream file ("HighScore.txt");
             file >> highScore;
             file.seekg(0);
@@ -259,4 +220,3 @@ class Window {
                 }
             }
         }
-};

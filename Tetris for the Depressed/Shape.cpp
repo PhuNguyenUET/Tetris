@@ -1,52 +1,15 @@
 #include <iostream>
-#include <vector>
-#include <cmath>
-#include <SDL2/SDL_mixer.h>
-#include <algorithm>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
 
-#include "EndGameNoti.cpp"
+#include "Shape.h"
 
-using std::string;
-using std::cout;
-using std::endl;
-using std::vector;
-using std::max;
-using std::min;
-using std::to_string;
- 
-class Shape {
-    private:
-        vector <vector <int>> shapes = {
-            {1, 3, 5, 7}, 
-            {0, 2, 4, 5}, 
-            {1, 3, 2, 4}, 
-            {1, 3, 2, 5}, 
-            {0, 3, 2, 5},
-            {1, 3, 5, 4},
-            {0, 2, 1, 3}
-        };
-
-        SDL_Point prevShapeArr[4];
-
-        int colorIdx;
-
-        Mix_Chunk* hardDropSound = NULL;
-
-    public:
-        SDL_Point shapeArr[4];
-
-        void fall (bool& startCount) {
+        void Shape::fall (bool& startCount) {
             for (int i = 0; i < 4; i++) {
                 shapeArr[i].y ++;
             }
             startCount = true;
         } 
 
-        bool checkMerge (vector <vector <int>>& board) {
+        bool Shape::checkMerge (vector <vector <int>>& board) {
             for (int i = 0; i < 4; i++) {
                 if (shapeArr[i].y == PLAY_ROW - 1) {
                     return true;
@@ -61,7 +24,7 @@ class Shape {
             return check;
         }
 
-        void rotateDown (vector <vector <int>>& board) {
+        void Shape::rotateDown (vector <vector <int>>& board) {
             for (int i = 0; i < 4; i++) {
                 prevShapeArr[i] = shapeArr[i];
             }
@@ -80,7 +43,7 @@ class Shape {
             }
         }
 
-        void rotateUp (vector <vector <int>>& board) {
+        void Shape::rotateUp (vector <vector <int>>& board) {
             for (int i = 0; i < 4; i++) {
                 prevShapeArr[i] = shapeArr[i];
             }
@@ -99,13 +62,13 @@ class Shape {
             }
         }
 
-        void merge (vector <vector <int>>& board) {
+        void Shape::merge (vector <vector <int>>& board) {
             for (int i = 0; i < 4; i++) {
                 board[shapeArr[i].y][shapeArr[i].x] = colorIdx + 10;
             }
         }
 
-        bool checkValidMove (vector <vector <int>>&  board) {
+        bool Shape::checkValidMove (vector <vector <int>>&  board) {
             for (int i = 0; i < 4; i++) {
                 if (shapeArr[i].x < 0 || shapeArr[i].x >= PLAY_COL ||board[shapeArr[i].y][shapeArr[i].x] >= 10) {
                     return false;
@@ -114,7 +77,7 @@ class Shape {
             return true;
         }
 
-        void moveLeft (vector <vector <int>>& board) {
+        void Shape::moveLeft (vector <vector <int>>& board) {
             for (int i = 0; i < 4; i++) {
                 prevShapeArr[i] = shapeArr[i];
             }
@@ -126,7 +89,7 @@ class Shape {
             }
         }
 
-        void moveRight (vector <vector <int>>& board) {
+        void Shape::moveRight (vector <vector <int>>& board) {
             for (int i = 0; i < 4; i++) {
                 prevShapeArr[i] = shapeArr[i];
             }
@@ -138,13 +101,13 @@ class Shape {
             }
         }
 
-        void undoChange () {
+        void Shape::undoChange () {
             for (int i = 0; i < 4; i++) {
                 shapeArr[i] = prevShapeArr[i];
             }
         }
 
-        void updateBoard (vector<vector<int>>& board) {
+        void Shape::updateBoard (vector<vector<int>>& board) {
             for (int i = 0; i < 4; i++) {
                 if (board[prevShapeArr[i].y][prevShapeArr[i].x] < 10) {
                     board[prevShapeArr[i].y][prevShapeArr[i].x] = 0;
@@ -177,7 +140,7 @@ class Shape {
             }
         }
 
-        void hardDrop (vector <vector <int>>& board, bool& merge, double &systemVolume) {
+        void Shape::hardDrop (vector <vector <int>>& board, bool& merge, double &systemVolume) {
             while (true) {
                 bool brk = false;
                 for (int i = 0; i < 4; i++) {
@@ -203,7 +166,7 @@ class Shape {
             Mix_PlayChannel(-1, hardDropSound, 0);
         }
 
-        void hover (vector <vector <int>>& board, bool& merge) {
+        void Shape::hover (vector <vector <int>>& board, bool& merge) {
             SDL_Point whiteLines[4];
             for (int i = 0; i < 4; i++) {
                 whiteLines[i].x = shapeArr[i].x;
@@ -236,15 +199,15 @@ class Shape {
             }
         }
 
-        void loadMedia () {
+        void Shape::loadMedia () {
             hardDropSound = Mix_LoadWAV("Audio/HardDrop.wav");
         }
 
-        int getColorIdx () {
+        int Shape::getColorIdx () {
             return colorIdx;
         }
 
-        void generateNextBlock (vector <SDL_Point> &nextShapeArr, vector<int> &shapeRotation, int& nxtColorIdx) {
+        void Shape::generateNextBlock (vector <SDL_Point> &nextShapeArr, vector<int> &shapeRotation, int& nxtColorIdx) {
             int shapeIdx;
             bool check = true;
             for (int i = 0; i < 7; i++) {
@@ -270,7 +233,7 @@ class Shape {
             }
         }
 
-        Shape (vector<int> &shapeRotation) {
+        Shape::Shape (vector<int> &shapeRotation) {
             int shapeIdx = rand() % 7;
             colorIdx = rand() % 7 + 1;
 
@@ -286,7 +249,7 @@ class Shape {
             loadMedia();
         }
 
-        Shape (vector <vector<int>>& board, bool& end, vector <SDL_Point> &nextShapeArr, int& nxtColorIdx) {
+        Shape::Shape (vector <vector<int>>& board, bool& end, vector <SDL_Point> &nextShapeArr, int& nxtColorIdx) {
             colorIdx = nxtColorIdx;
             for (int i = 0; i < 4; i++) {
                 shapeArr[i].x = nextShapeArr[i].x;
@@ -302,8 +265,7 @@ class Shape {
             loadMedia();
         }
 
-        ~Shape() {
+        Shape::~Shape() {
             Mix_FreeChunk(hardDropSound);
             hardDropSound = NULL;
         }
-};

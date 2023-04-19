@@ -11,6 +11,8 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
+#include "Constants.h"
+
 using std::string;
 using std::cout;
 using std::endl;

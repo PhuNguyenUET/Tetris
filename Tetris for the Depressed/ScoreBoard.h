@@ -8,6 +8,9 @@
 #include <SDL2/SDL_ttf.h>
 #include <string>
 
+#include "Constants.h"
+#include "LTexture.h"
+
 using std::string;
 using std::cout;
 using std::endl;

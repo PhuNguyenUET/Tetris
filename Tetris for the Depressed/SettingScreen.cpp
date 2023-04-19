@@ -1,36 +1,8 @@
 #include <iostream>
-#include <vector>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
-#include "ProgressBar.cpp"
 
-using std::vector;
+#include "SettingScreen.h"
 
-class SettingScreen {
-    private:
-        vector <string> songsList = {"Classic Theme Song", "Hold on Tight", "Dissipate", "Natsukashii", "WillPower"};
-        const int UIwidth = 960;
-        const int UIheight = 600;
-
-        Button* exitButton;
-        Button* changeButton;
-        LTexture* SettingsWindow;
-
-        SDL_Texture* sysTexture = NULL;
-        SDL_Texture* music = NULL;
-        SDL_Texture* songs = NULL;
-        SDL_Texture* songName = NULL;
-
-        ProgressBar* musicBar;
-        ProgressBar* systemBar;
-
-        TTF_Font* font = NULL;
-
-        int x, y;
-    public:
-        SettingScreen(SDL_Renderer* &renderer, int x, int y, double& systemVolume, double& musicVolume, int& currentMusic) {
+        SettingScreen::SettingScreen(SDL_Renderer* &renderer, int x, int y, double& systemVolume, double& musicVolume, int& currentMusic) {
             TTF_Init();
             font = TTF_OpenFont("Font/Font.ttf", 30);
 
@@ -51,14 +23,14 @@ class SettingScreen {
             loadFromRenderedText(songName, songsList[currentMusic], renderer);
         }
 
-        void free (SDL_Texture* &texture) {
+        void SettingScreen::free (SDL_Texture* &texture) {
             if (texture != NULL) {
                 SDL_DestroyTexture(texture);
                 texture = NULL;
             }
         }
 
-        ~SettingScreen () {
+        SettingScreen::~SettingScreen () {
             free(music);
             free(sysTexture);
             free(songs);
@@ -66,7 +38,7 @@ class SettingScreen {
             font = NULL; 
         }
 
-        void loadFromRenderedText (SDL_Texture* &texture, string text, SDL_Renderer* &renderer) {
+        void SettingScreen::loadFromRenderedText (SDL_Texture* &texture, string text, SDL_Renderer* &renderer) {
             free (texture);
 
             SDL_Color color = {255, 255, 255, 255};
@@ -77,7 +49,7 @@ class SettingScreen {
             SDL_FreeSurface(textSurface);
         }
 
-        void handleEvent (SDL_Renderer* &renderer, SDL_Event e, bool& openSetting, double& systemVolume, double& musicVolume, int& currentMusic) {
+        void SettingScreen::handleEvent (SDL_Renderer* &renderer, SDL_Event e, bool& openSetting, double& systemVolume, double& musicVolume, int& currentMusic) {
             bool close = false;
             exitButton->handleEvent(e, close);
             if (close) {
@@ -95,7 +67,7 @@ class SettingScreen {
             }
         }
 
-        void render (SDL_Renderer* &renderer, int& currentMusic) {
+        void SettingScreen::render (SDL_Renderer* &renderer, int& currentMusic) {
             SDL_Rect musicRect = {x + 150, y + 150, 200, 50};
             SDL_Rect systemRect = {x + 150, y + 220, 200, 50};
             SDL_Rect songRect = {x + 150, y + 290, 200, 50};
@@ -130,4 +102,3 @@ class SettingScreen {
             musicBar->render(renderer);
             systemBar->render(renderer);
         }
-};

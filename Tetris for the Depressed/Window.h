@@ -9,6 +9,13 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
+#include "LTexture.h"
+#include "ScoreBoard.h"
+#include "EndGameNoti.h"
+#include "NextBlock.h"
+#include "Shape.h"
+#include "Board.h"
+
 using std::string;
 using std::cout;
 using std::endl;

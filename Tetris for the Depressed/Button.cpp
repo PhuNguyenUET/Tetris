@@ -1,23 +1,8 @@
 #include <iostream>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_ttf.h>
-#include <string>
 
-using std::string;
-using std::cout;
-using std::endl;
-using std::to_string;
+#include "Button.h"
 
-class Button {
-    private:
-        SDL_Texture* buttonTexture;
-        SDL_Point pos;
-        int width;
-        int height;
-    public:
-        Button (SDL_Renderer* &renderer, string path, int width, int height) {;
+        Button::Button (SDL_Renderer* &renderer, string path, int width, int height) {;
             SDL_Surface* buttonSurface = IMG_Load(path.c_str());
             buttonTexture = SDL_CreateTextureFromSurface(renderer, buttonSurface);
             SDL_FreeSurface(buttonSurface);
@@ -25,12 +10,12 @@ class Button {
             this->height = height;
         }
 
-        void setPos (int x, int y) {
+        void Button::setPos (int x, int y) {
             pos.x = x;
             pos.y = y;
         }
 
-        void handleEvent (SDL_Event& e, bool& change) {
+        void Button::handleEvent (SDL_Event& e, bool& change) {
             if (e.type == SDL_MOUSEBUTTONDOWN) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
@@ -56,13 +41,12 @@ class Button {
             }
         }
 
-        void render (SDL_Renderer* &renderer) {
+        void Button::render (SDL_Renderer* &renderer) {
             SDL_Rect renderQuad = {pos.x, pos.y, width, height};
             SDL_RenderCopy(renderer, buttonTexture, NULL, &renderQuad);
         }
 
-        void close () {
+        void Button::close () {
             SDL_DestroyTexture(buttonTexture);
             buttonTexture = NULL;
         }
-};
