@@ -8,9 +8,10 @@
 #include "Window.h"
 #include "TitleScreen.h"
 
-int main (int argc, char* args[]) {
-    srand (time(0));
-    SDL_Window* window = NULL;
+int main(int argc, char *args[])
+{
+    srand(time(0));
+    SDL_Window *window = NULL;
 
     bool quit = false;
     bool playNext = false;
@@ -21,8 +22,10 @@ int main (int argc, char* args[]) {
     int songIdx = 0;
 
     new TitleScreen(window, quit, true, systemVolume, musicVolume, songIdx);
-    do {
-        if (turnBack) {
+    do
+    {
+        if (turnBack)
+        {
             new TitleScreen(window, quit, false, systemVolume, musicVolume, songIdx);
             turnBack = false;
         }

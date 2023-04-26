@@ -12,18 +12,19 @@
 
 using std::vector;
 
-class NextBlock {
+class NextBlock
+{
 private:
     const int neonEdge = 230;
 
 public:
     LTexture *neon = new LTexture(neonEdge, neonEdge);
     int nextShape[4][2];
-    LTexture* tiles;
+    LTexture *tiles;
     SDL_Rect indTile[8];
 
-    void loadMedia (SDL_Renderer* renderer);
-    void render (int x, int y, SDL_Renderer* renderer, vector <SDL_Point> nextShapeArr, int nxtColorIdx);
+    void loadMedia(SDL_Renderer *renderer);
+    void render(int x, int y, SDL_Renderer *renderer, vector<SDL_Point> nextShapeArr, int nxtColorIdx);
 };
 
 #endif
