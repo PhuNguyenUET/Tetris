@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "NextBlock.h"
+#include "../Header/NextBlock.h"
 
 void NextBlock::loadMedia(SDL_Renderer *renderer)
 {

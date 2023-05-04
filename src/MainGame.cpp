@@ -5,8 +5,8 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
-#include "Window.h"
-#include "TitleScreen.h"
+#include "../Header/Window.h"
+#include "../Header/TitleScreen.h"
 
 int main(int argc, char *args[])
 {
@@ -21,6 +21,8 @@ int main(int argc, char *args[])
     double musicVolume = 0.5;
     int songIdx = 0;
 
+    // Create a window, then between titlescreen, game-screen and end-game screen
+    // Destroy the texture rendering it and create a new one to fit the state
     new TitleScreen(window, quit, true, systemVolume, musicVolume, songIdx);
     do
     {

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "Window.h"
+#include "../Header/Window.h"
 
 void Window::init(SDL_Window *&window)
 {
@@ -28,6 +28,7 @@ void Window::loadMedia(int songIdx)
     nxtBlock->loadMedia(renderer);
 
     endGameSound = Mix_LoadWAV("Audio/GameOver.wav");
+    // Change the themesong
     switch (songIdx)
     {
     case 0:
@@ -71,11 +72,14 @@ void Window::kill(SDL_Window *&window)
     SDL_Quit();
 }
 
+// Sorry I crammed them all into constructor 
 Window::Window(SDL_Window *&window, bool &quit, bool &playNext, double &systemVolume, double &musicVolume, int &songIdx, bool &turnBack)
 {
-    std::fstream file("HighScore.txt");
+    // read/write from file
+    std::fstream file("src/HighScore.txt");
     file >> highScore;
     file.seekg(0);
+    // Create the board
     for (int i = 0; i < PLAY_ROW; i++)
     {
         vector<int> tmp;
@@ -98,6 +102,7 @@ Window::Window(SDL_Window *&window, bool &quit, bool &playNext, double &systemVo
     int prevScore = score;
     int prevLockTime = 0;
 
+    // First-time initiation before entering the game loop
     shape = new Shape(shapeRotation);
     shape->generateNextBlock(nextShapeArr, shapeRotation, nxtColorIdx);
     brd = new Board(renderer);
@@ -111,12 +116,15 @@ Window::Window(SDL_Window *&window, bool &quit, bool &playNext, double &systemVo
     nxtBlock->render(SCREEN_WIDTH - 350, 50, renderer, nextShapeArr, nxtColorIdx);
     tutorial->render(120, 70, renderer);
 
+    // Change the volume based on setting
     Mix_VolumeMusic(MIX_MAX_VOLUME * musicVolume);
     Mix_VolumeChunk(endGameSound, MIX_MAX_VOLUME * systemVolume);
     Mix_PlayMusic(themeSong, -1);
 
     while (!quit && !end)
     {
+        // Handle events
+        // The time to calculate the fall time as well as the merge time
         int time = SDL_GetTicks();
         bool merge = false;
         while (SDL_PollEvent(&e))
@@ -137,6 +145,7 @@ Window::Window(SDL_Window *&window, bool &quit, bool &playNext, double &systemVo
             prevScore = score;
         }
 
+        // After this time, the shape fall
         if (time - prevTime >= 700)
         {
             if (!shape->checkMerge(board))
@@ -148,9 +157,12 @@ Window::Window(SDL_Window *&window, bool &quit, bool &playNext, double &systemVo
 
         if (startCount)
         {
+            // prevLockTime is the time the block started to interact with a surface
             prevLockTime = time;
         }
 
+        // Merging, create new shape
+        // hard-drop
         if (merge)
         {
             shape->updateBoard(board);
@@ -158,9 +170,11 @@ Window::Window(SDL_Window *&window, bool &quit, bool &playNext, double &systemVo
             shape = new Shape(board, end, nextShapeArr, nxtColorIdx);
             shape->generateNextBlock(nextShapeArr, shapeRotation, nxtColorIdx);
         }
+        // Interact with surface
         else if (shape->checkMerge(board))
         {
             startCount = false;
+            // After 500 ms, start merging
             if (time - prevLockTime >= 500)
             {
                 shape->updateBoard(board);
@@ -176,6 +190,7 @@ Window::Window(SDL_Window *&window, bool &quit, bool &playNext, double &systemVo
             end = true;
         }
 
+        // Render stuffs
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
 
@@ -210,7 +225,8 @@ Window::Window(SDL_Window *&window, bool &quit, bool &playNext, double &systemVo
         kill(window);
     }
     else
-    {
+    {   
+        // End-game window
         endGameNoti = new EndGameNoti(renderer);
 
         endGameNoti->loadScore(score, highScore, renderer);

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "Button.h"
+#include "../Header/Button.h"
 
 Button::Button(SDL_Renderer *&renderer, string path, int width, int height)
 {

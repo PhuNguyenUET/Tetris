@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "ProgressBar.h"
+#include "../Header/ProgressBar.h"
 
 ProgressBar::ProgressBar(SDL_Renderer *&renderer, int x, int y, double &volume)
 {

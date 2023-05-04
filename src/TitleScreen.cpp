@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "TitleScreen.h"
+#include "../Header/TitleScreen.h"
 
 void TitleScreen::init(SDL_Window *&window, bool firstTime)
 {

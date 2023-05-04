@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "LTexture.h"
+#include "../Header/LTexture.h"
 
 LTexture::LTexture(int width, int height)
 {
@@ -33,6 +33,7 @@ void LTexture::loadFromFile(string path, SDL_Renderer *&renderer)
     orgiHeight = loadedSurface->h;
     orgiWidth = loadedSurface->w;
 
+    // If not specified then take the original
     if (mWidth == 0)
     {
         mWidth = loadedSurface->w;
@@ -60,6 +61,8 @@ void LTexture::render(int x, int y, SDL_Renderer *&renderer, SDL_Rect *clip, dou
 {
     SDL_Rect renderQuad = {x, y, mWidth, mHeight};
     SDL_RendererFlip flip = SDL_FLIP_NONE;
+    // This part is to scale the desired dimension to the original dimension
+    // I do it like this because if I don't somehow it always end up being clipped up or being oversized
     if (clip != NULL)
     {
         renderQuad.w = mWidth * (double)clip->w / (double)orgiWidth;

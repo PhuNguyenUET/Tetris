@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "ScoreBoard.h"
+#include "../Header/ScoreBoard.h"
 
 ScoreBoard::ScoreBoard(int scoreWidth, int scoreHeight, int lineWidth, int lineHeight, SDL_Renderer *&renderer)
 {

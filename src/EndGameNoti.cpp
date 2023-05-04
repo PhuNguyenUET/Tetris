@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "EndGameNoti.h"
+#include "../Header/EndGameNoti.h"
 
 EndGameNoti::EndGameNoti(SDL_Renderer *&renderer)
 {

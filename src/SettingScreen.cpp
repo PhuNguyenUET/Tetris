@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "SettingScreen.h"
+#include "../Header/SettingScreen.h"
 
 SettingScreen::SettingScreen(SDL_Renderer *&renderer, int x, int y, double &systemVolume, double &musicVolume, int &currentMusic)
 {

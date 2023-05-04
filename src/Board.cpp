@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Board.h"
+#include "../Header/Board.h"
 
 Board::Board(SDL_Renderer *&renderer)
 {
@@ -53,6 +53,7 @@ void Board::handleEvent(SDL_Event e, Shape *shape, vector<vector<int>> &board, b
     }
 }
 
+// The integer in the grid is used to render blocks
 void Board::render(vector<vector<int>> &board, SDL_Renderer *renderer)
 {
     for (int i = 0; i < PLAY_ROW; i++)
@@ -70,6 +71,7 @@ void Board::render(vector<vector<int>> &board, SDL_Renderer *renderer)
                     tiles->render(j * 22 + 490, i * 22 + 47, renderer, &indTile[board[i][j] - 10]);
                 }
             }
+            // Draw the white lines around a block
             if (board[i][j] == -1)
             {
                 SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -96,6 +98,7 @@ void Board::clearHover(vector<vector<int>> &board)
     }
 }
 
+// If the first line is a surface, then game-over
 bool Board::isGameOver(vector<vector<int>> &board)
 {
     for (int i = 0; i < PLAY_COL; i++)
@@ -111,9 +114,11 @@ bool Board::isGameOver(vector<vector<int>> &board)
 void Board::clearLines(vector<vector<int>> &board, vector<bool> &rowState, int &lines, int &score, int &highScore, double &systemVolume)
 {
     int numClear = 0;
+    // Get the number of lines needed to clear, while update what rows need to be cleared
     for (int i = 0; i < PLAY_ROW; i++)
     {
         bool clear = true;
+        // if rowState is true, then that line needs to be cleared
         rowState[i] = true;
         for (int j = 0; j < PLAY_COL; j++)
         {
@@ -123,6 +128,7 @@ void Board::clearLines(vector<vector<int>> &board, vector<bool> &rowState, int &
                 rowState[i] = false;
             }
         }
+        // If the line needs to be cleared, set it all to 0
         if (clear)
         {
             for (int j = 0; j < PLAY_COL; j++)
@@ -141,9 +147,10 @@ void Board::clearLines(vector<vector<int>> &board, vector<bool> &rowState, int &
             int curRow = idx;
             while (idx < PLAY_ROW && rowState[++idx])
             {
-                // get to the lowest clear lines
+                // get to the lowest line that needs to be cleared
             }
             idx--;
+            // Move lines one by one to fill the cleared lines
             for (int j = 0; j < PLAY_COL; j++)
             {
                 if (board[curRow][j] >= 10)
@@ -151,6 +158,8 @@ void Board::clearLines(vector<vector<int>> &board, vector<bool> &rowState, int &
                     board[idx][j] = board[curRow][j];
                 }
             }
+            // If it is equal then there is no lines to clear
+            // Else after moving lines downward, set all this line to 0 (Simulate falling lines by lines)
             if (idx != curRow)
             {
                 for (int j = 0; j < PLAY_COL; j++)
@@ -164,6 +173,7 @@ void Board::clearLines(vector<vector<int>> &board, vector<bool> &rowState, int &
     }
     Mix_VolumeChunk(clearLineSound, MIX_MAX_VOLUME * systemVolume);
     Mix_VolumeChunk(clearMultipleSound, MIX_MAX_VOLUME * systemVolume);
+    // Rules to calculate the score
     if (numClear == 1)
     {
         score += 10;
