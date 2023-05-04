@@ -35,16 +35,10 @@ void Window::loadMedia(int songIdx)
         themeSong = Mix_LoadMUS("Audio/TetrisSoundTrackOriginal.wav");
         break;
     case 1:
-        themeSong = Mix_LoadMUS("Audio/TetrisSoundTrackWithLyrics.wav");
-        break;
-    case 2:
         themeSong = Mix_LoadMUS("Audio/Dissipate.wav");
         break;
-    case 3:
+    case 2:
         themeSong = Mix_LoadMUS("Audio/Natsukashii.wav");
-        break;
-    case 4:
-        themeSong = Mix_LoadMUS("Audio/WillPower.wav");
         break;
     }
 }

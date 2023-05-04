@@ -70,7 +70,7 @@ void SettingScreen::handleEvent(SDL_Renderer *&renderer, SDL_Event e, bool &open
         changeButton->handleEvent(e, changeMusic);
         if (changeMusic)
         {
-            currentMusic = (currentMusic + 1) % 5;
+            currentMusic = (currentMusic + 1) % 3;
             changeMusic = false;
             loadFromRenderedText(songName, songsList[currentMusic], renderer);
         }
@@ -89,16 +89,10 @@ void SettingScreen::render(SDL_Renderer *&renderer, int &currentMusic)
         songNameRect = {x + 400, y + 290, 300, 50};
         break;
     case 1:
-        songNameRect = {x + 400, y + 290, 220, 50};
-        break;
-    case 2:
         songNameRect = {x + 400, y + 290, 150, 50};
         break;
-    case 3:
+    case 2:
         songNameRect = {x + 400, y + 290, 180, 50};
-        break;
-    case 4:
-        songNameRect = {x + 400, y + 290, 160, 50};
         break;
     }
     SettingsWindow->render(x, y, renderer);

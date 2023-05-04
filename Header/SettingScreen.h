@@ -18,7 +18,7 @@ using std::vector;
 class SettingScreen
 {
 private:
-    vector<string> songsList = {"Classic Theme Song", "Hold on Tight", "Dissipate", "Natsukashii", "WillPower"};
+    vector<string> songsList = {"Classic Theme Song", "Dissipate", "Natsukashii"};
     const int UIwidth = 960;
     const int UIheight = 600;
 
